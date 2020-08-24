@@ -3,9 +3,9 @@ import {View, Text, StyleSheet } from 'react-native';
 
 import MenuHeaderButton from '../components/MenuHeaderButton';
 
-const CurrentShoppingListScreen = () => {
+const ShoppingListsOverviewScreen = () => {
     return (
-        <View style={styles.screen}><Text>Current shopping list</Text></View>
+        <View style={styles.screen}><Text>Shopping lists</Text></View>
     );
 };
 
@@ -17,9 +17,9 @@ const styles = StyleSheet.create({
 
 export const ScreenOptions = navData => {
     return {
-        headerTitle: 'Current shopping list',
+        headerTitle: 'Your shopping lists',
         headerLeft: () => <MenuHeaderButton onPress={() => navData.navigation.toggleDrawer() } />
     }
 };
 
-export default CurrentShoppingListScreen;
+export default ShoppingListsOverviewScreen;
