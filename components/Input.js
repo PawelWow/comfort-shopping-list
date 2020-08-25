@@ -12,7 +12,8 @@ const inputReducer = (state, action) => {
             return {
                 ...state,
                 value: action.value,
-                isValid: action.isValid
+                isValid: action.isValid,
+                isTouched: true
             }
 
         case INPUT_BLUR:
@@ -46,13 +47,7 @@ const Input = props => {
         if( props.isRequired && text.trim().length === 0) {
             isValid = false;
         }
-    
-        // min length
-        if(props.minLength != null && text.trim().length < +props.minLength)
-        {
-            isValid = false;
-        }
-    
+        
         dispatch({ type: INPUT_CHANGE, value: text, isValid: isValid});
     }
     

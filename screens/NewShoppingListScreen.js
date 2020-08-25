@@ -113,7 +113,7 @@ const NewShoppingListScreen = props => {
                         keyboardType="default"
                         autCapitalize="sentences"
                         autoCorrect
-                        returnType="next"
+                        returnKeyType="next"
                         onInputChange={onInputChange}
                         required
                     />
@@ -129,7 +129,7 @@ const NewShoppingListScreen = props => {
                         numberOfLines={5}
                         onInputChange={onInputChange}
                         required
-                        minLength={3}
+                     
                     />
                                    
                 </View>
