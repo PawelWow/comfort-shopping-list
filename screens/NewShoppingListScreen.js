@@ -1,11 +1,138 @@
-import React from 'react';
-import {View, Text, StyleSheet } from 'react-native';
+import React, {
+    useReducer,
+    useState,
+    useEffect,
+    useCallback
+ } from 'react';
+import {
+    View,
+    StyleSheet,
+    Alert,
+    ScrollView,
+    KeyboardAvoidingView
+} from 'react-native';
 
 import MenuHeaderButton from '../components/MenuHeaderButton';
+import SaveHeaderButton from '../components/SaveHeaderButton';
 
-const NewShoppingListScreen = () => {
+import Input from '../components/Input';
+import Platform from '../defs/Platform';
+
+const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
+
+const formReducer = (state, action ) => {
+    if(action.type !== FORM_INPUT_UPDATE){
+        return state;
+    }
+
+    const updatedValidities = { ...state.inputValues, [action.input]: action.value };
+
+    let updatedFormIsValid = true;
+    for( const key in updatedValidities) {
+        updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
+    }
+
+    return {
+        formIsValid: updatedFormIsValid,
+        inputValidities: updatedValidities,
+        inputValues: updatedValues
+    }
+};
+
+
+const NewShoppingListScreen = props => {
+    const [error, setError] = useState();
+
+    const [formState, dispatchFormState] = useReducer(formReducer, {
+        inputValues: {
+            title: '',
+            values: '',
+            shoppingDate: '',
+            shoppingHour: ''
+        },
+        inputValidities: {
+            title: false,
+            values: false
+        },
+        formIsValid: false
+    });
+
+    useEffect(() => {
+        if(error) {
+            Alert.alert('An error occured!', error, [{ text: 'OK' }]);
+        }
+    }, [error]);
+
+    // Wykonuje akcję dodawania nowej listy
+    // TODO - na razie tylko wraca do poprzedniej strony
+    const onFormSubmit = () => {
+        if(!formState.formIsValid){
+            Alert.alert('Wrong data', 'Check the error in the form.', [ {text: 'OK '}]);
+            return;
+        }
+
+        props.navigation.goBack();
+    };
+
+    // Przycisk zapisywania po prawej w headerze
+    // TODO - useEffect, bo kliknięcie spowoduje zapis do bazy
+    useEffect(() => {
+        props.navigation.setOptions({
+            headerRight: () => <SaveHeaderButton onPress={onFormSubmit} />
+        });
+    }), [onFormSubmit];
+    
+    const onInputChange = useCallback(
+        (inputIdentifier, inputValue, inputValidity) => {
+            dispatchFormState({
+                type: FORM_INPUT_UPDATE,
+                value: inputValue,
+                isValid: inputValidity,
+                input: inputIdentifier
+            });
+        },
+        [dispatchFormState]
+    );
+
     return (
-        <View style={styles.screen}><Text>Create new list</Text></View>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.isAndroid ? 'height' : 'padding'}
+            keyboardVerticalOffset={50}
+        >
+            <ScrollView>
+                <View style={styles.screen}>
+                    <Input
+                        id="title"
+                        label="Title"
+                        errorMessage="Enter a title"
+                        keyboardType="default"
+                        autCapitalize="sentences"
+                        autoCorrect
+                        returnType="next"
+                        onInputChange={onInputChange}
+                        required
+                    />
+
+                    <Input
+                        id="content"
+                        label="Content"
+                        errorMessage="Enter shopping list content"
+                        keyboardType="default"
+                        autoCapitalize="sentences"
+                        autoCorrect
+                        multiline
+                        numberOfLines={5}
+                        onInputChange={onInputChange}
+                        required
+                        minLength={3}
+                    />
+                                   
+                </View>
+            </ScrollView>
+
+        </KeyboardAvoidingView>
+
     );
 };
 
