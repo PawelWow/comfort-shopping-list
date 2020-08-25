@@ -12,11 +12,14 @@ import {
     KeyboardAvoidingView
 } from 'react-native';
 
+import shortid from 'shortid';
+
 import MenuHeaderButton from '../components/MenuHeaderButton';
 import SaveHeaderButton from '../components/SaveHeaderButton';
 
 import Input from '../components/Input';
 import Platform from '../defs/Platform';
+import Entry from '../models/Entry';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
@@ -72,9 +75,27 @@ const NewShoppingListScreen = props => {
             Alert.alert('Wrong data', 'Check the error in the form.', [ {text: 'OK '}]);
             return;
         }
+
+        const entries = splitContentToEntries(formState.inputValues.content, ',');
+
         console.log('submit');
+        console.log(entries);
+
         props.navigation.goBack();
     };
+
+    // Dzieli cały tekst na wpisy
+    const splitContentToEntries = (text, separator) => {
+        const values = String(text).split(separator);
+
+        const entries = values.map( value => {
+                const id = shortid.generate();
+
+                return new Entry(id, value)}
+            );
+
+        return entries;
+    }
 
     // Przycisk zapisywania po prawej w headerze
     // TODO - useEffect, bo kliknięcie spowoduje zapis do bazy
