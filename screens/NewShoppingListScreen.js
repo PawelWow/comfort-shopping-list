@@ -31,7 +31,6 @@ const formReducer = (state, action ) => {
     let updatedFormIsValid = true;
     for( const key in updatedValidities) {
         updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
-        console.log(`for ${key} is ${updatedFormIsValid} and ${updatedValidities[key]}`)
     }
 
     return {
