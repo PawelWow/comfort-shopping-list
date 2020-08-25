@@ -25,11 +25,13 @@ const formReducer = (state, action ) => {
         return state;
     }
 
-    const updatedValidities = { ...state.inputValues, [action.input]: action.value };
+    const updatedValues = { ...state.inputValues, [action.input]: action.value };
+    const updatedValidities = { ...state.inputValidities, [action.input]: action.isValid };
 
     let updatedFormIsValid = true;
     for( const key in updatedValidities) {
         updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
+        console.log(`for ${key} is ${updatedFormIsValid} and ${updatedValidities[key]}`)
     }
 
     return {
@@ -46,13 +48,13 @@ const NewShoppingListScreen = props => {
     const [formState, dispatchFormState] = useReducer(formReducer, {
         inputValues: {
             title: '',
-            values: '',
+            content: '',
             shoppingDate: '',
             shoppingHour: ''
         },
         inputValidities: {
             title: false,
-            values: false
+            content: false
         },
         formIsValid: false
     });
@@ -66,11 +68,12 @@ const NewShoppingListScreen = props => {
     // Wykonuje akcję dodawania nowej listy
     // TODO - na razie tylko wraca do poprzedniej strony
     const onFormSubmit = () => {
+
         if(!formState.formIsValid){
             Alert.alert('Wrong data', 'Check the error in the form.', [ {text: 'OK '}]);
             return;
         }
-
+        console.log('submit');
         props.navigation.goBack();
     };
 
@@ -84,6 +87,7 @@ const NewShoppingListScreen = props => {
     
     const onInputChange = useCallback(
         (inputIdentifier, inputValue, inputValidity) => {
+            
             dispatchFormState({
                 type: FORM_INPUT_UPDATE,
                 value: inputValue,
@@ -92,13 +96,14 @@ const NewShoppingListScreen = props => {
             });
         },
         [dispatchFormState]
+        
     );
 
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.isAndroid ? 'height' : 'padding'}
-            keyboardVerticalOffset={50}
+            keyboardVerticalOffset={30}
         >
             <ScrollView>
                 <View style={styles.screen}>
