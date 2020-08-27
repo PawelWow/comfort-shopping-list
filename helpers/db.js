@@ -54,9 +54,10 @@ export const insertList = (title, shopping_date, shopping_time, creation_datetim
 
                     // teraz itemy listy
                     const insertQuery = buildInsertItemsQuery(itemsCount);
+                    const insertValues = prepareInsertQueryValues(result.insertId, items);
                     tx.executeSql(
                         insertQuery, 
-                        [items], 
+                        insertValues, 
                         (_, result) => {
                             resolve(result)
                         },
@@ -69,16 +70,20 @@ export const insertList = (title, shopping_date, shopping_time, creation_datetim
                     reject(err);
                 }
                 );
-
-                console.log('data' + listId);
         });
     });
 
     return promise;
 };
 
-// buduje insert query dla pojedynczego wiersza lub wielu
+// buduje insert query dla pojedynczego wiersza - głównie chodzi o VALUES (id_listy, w1), (id_listy, w2)
 const buildInsertItemsQuery = itemsCount => {
-    const placeholders = new Array(itemsCount).fill('?').join(', ');
+    const placeholders = new Array(itemsCount).fill('?, ?').join(', ');
     return `INSERT INTO items (content) VALUES ${placeholders};`;
+}
+
+// rozszerza tablicę wartości zapytania o id listy, bo dodajemy wartości w postaci (id_listy, w1), (id_listy, w2)
+const prepareInsertQueryValues = (listId, items) => {
+    const values = items.map(item => [listId, item]);
+    return values.flat();
 }
