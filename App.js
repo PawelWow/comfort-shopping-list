@@ -2,7 +2,7 @@ import React from 'react';
 
 import AppNavigator from './navigation/AppNavigator';
 
-import { init, init2 } from './helpers/db';
+import { init } from './helpers/db';
 
 init().then(() => {
   console.log("Database initialized");
