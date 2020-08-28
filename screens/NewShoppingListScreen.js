@@ -19,7 +19,7 @@ import SaveHeaderButton from '../components/SaveHeaderButton';
 
 import Input from '../components/Input';
 import Platform from '../defs/Platform';
-import Entry from '../models/Entry';
+import Item from '../models/Item';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
@@ -91,7 +91,7 @@ const NewShoppingListScreen = props => {
         const entries = values.map( value => {
                 const id = shortid.generate();
 
-                return new Entry(id, value)}
+                return new Item(id, value)}
             );
 
         return entries;

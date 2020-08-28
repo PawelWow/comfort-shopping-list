@@ -8,3 +8,5 @@ class ShoppingList {
         this.creationDate = creationDate
     }
 }
+
+export default ShoppingList;
