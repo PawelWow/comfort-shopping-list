@@ -6,6 +6,31 @@ export const init = () => {
     const promise = new Promise((resolve, reject) => {
 
         db.transaction(query => {
+
+            // TODO usunąć dropy
+            query.executeSql(
+                'DROP TABLE IF EXISTS lists;', 
+                [],
+                () => {
+                    resolve()
+                }, 
+                (_, err) => {
+                    reject(err);
+                }
+            );
+
+            query.executeSql(
+                'DROP TABLE IF EXISTS items;',
+                [],
+                () => {
+                    resolve()
+                }, 
+                (_, err) => {
+                    reject(err);
+                }
+            );
+
+            // o ID listy baza sama ma sobie dbać
             query.executeSql(
                 'CREATE TABLE IF NOT EXISTS lists (id INTEGER PRIMARY KEY NOT NULL, title TEXT NOT NULL, shopping_date TEXT NULL, shopping_time TEXT NULL, creation_datetime TEXT NOT NULL);', 
                 [],
@@ -17,8 +42,9 @@ export const init = () => {
                 }
             );
 
+            // o unikalność ID musimy zadbać sami, w ktracie tworzenia nowego itema przez usera
             query.executeSql(
-                'CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY NOT NULL, list_id INTEGER NOT NULL, content TEXT NOT NULL, is_done TEXT NOT NULL DEFAULT 0);',
+                'CREATE TABLE IF NOT EXISTS items (id TEXT PRIMARY KEY NOT NULL, list_id INTEGER NOT NULL, content TEXT NOT NULL, is_done TEXT NOT NULL DEFAULT 0);',
                 [],
                 () => {
                     resolve()
@@ -34,14 +60,14 @@ export const init = () => {
     return promise;
 };
 
-// dodaje nową listę z itemami
-export const insertList = (title, shopping_date, shopping_time, creation_datetime, items) => {
+// dodaje nową listę z itemami (każdy item: id, content, isDone)
+export const insertList = (title, shoppingDate, shoppingHour, creationDateTime, items) => {
     const promise = new Promise((resolve, reject) => {
         db.transaction(tx => {
 
             tx.executeSql(
                 'INSERT INTO lists (title, shopping_date, shopping_time, creation_datetime) VALUES (?, ?, ?, ?);', 
-                [title, shopping_date, shopping_time, creation_datetime], 
+                [title, shoppingDate, shoppingHour, creationDateTime], 
                 (_, result) => {
                     resolve(result);
 
@@ -53,16 +79,17 @@ export const insertList = (title, shopping_date, shopping_time, creation_datetim
 
                     // teraz itemy listy
                     const insertQuery = buildInsertItemsQuery(itemsCount);
-                    const insertValues = prepareInsertQueryValues(result.insertId, items, 0);
+                    const insertValues = prepareInsertItemQueryValues(result.insertId, items);
+
                     tx.executeSql(
-                        insertQuery, 
-                        insertValues, 
-                        (_, result) => {
-                            resolve(result)
-                        },
-                        (_, err) => {
-                            reject(err);
-                        }
+                            insertQuery, 
+                            insertValues, 
+                            (_, result) => {
+                                resolve(result)
+                            },
+                            (_, err) => {
+                                reject(err);
+                            }
                         );
                 },
                 (_, err) => {
@@ -81,16 +108,16 @@ export const insertItems = (listId, items) => {
 
         db.transaction(tx => {
             const insertQuery = buildInsertItemsQuery(items.length);
-            const insertValues = prepareInsertQueryValues(listId, items, 0);
+            const insertValues = prepareInsertItemQueryValues(listId, items);
             tx.executeSql(
-                insertQuery, 
-                insertValues, 
-                (_, result) => {
-                    resolve(result)
-                },
-                (_, err) => {
-                    reject(err);
-                }
+                    insertQuery, 
+                    insertValues, 
+                    (_, result) => {
+                        resolve(result)
+                    },
+                    (_, err) => {
+                        reject(err);
+                    }
                 );
         });
 
@@ -99,7 +126,8 @@ export const insertItems = (listId, items) => {
     return promise;
 }
 
-export const updateList = (listId, newTitle, newShoppingDate, newShoppingTime) => {
+// aktualizuje podstawowe dane listy (bez itemów)
+export const updateListData = (listId, newTitle, newShoppingDate, newShoppingTime) => {
     const promise = new Promise((resolve, reject) => {
         db.transaction(tx => {
 
@@ -204,7 +232,7 @@ export const deleteItems = listId => {
             const deleteItemsQuery = buildDeleteItemsQuery(1);
             tx.executeSql(
                 deleteItemsQuery, 
-                listIds, 
+                listId, 
                 (_, result) => {
                     resolve(result);
                 },
@@ -218,6 +246,64 @@ export const deleteItems = listId => {
     return promise;     
 }
 
+export const fetchLists = () => {
+    const promise = new Promise((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                    'SELECT * FROM lists', 
+                    [], 
+                    (_, result) => {
+                        resolve(result)
+                    },
+                    (_, err) => {
+                        reject(err);
+                    }
+                );
+        });
+    });
+
+    return promise;    
+};
+
+export const fetchItems = () => {
+    const promise = new Promise((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                    'SELECT * FROM items', 
+                    [], 
+                    (_, result) => {
+                        resolve(result)
+                    },
+                    (_, err) => {
+                        reject(err);
+                    }
+                );
+        });
+    });
+
+    return promise;    
+};
+
+export const fetchItemsOfList = (listId) => {
+    const promise = new Promise((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                    'SELECT * FROM items WHERE list_id=?', 
+                    [listId], 
+                    (_, result) => {
+                        resolve(result)
+                    },
+                    (_, err) => {
+                        reject(err);
+                    }
+                );
+        });
+    });
+
+    return promise;    
+};
+
+
 // buduje kwerendę usuwania itemów o podanej ilosći
 const buildDeleteItemsQuery = itemsCount => {
     const placeholders = new Array(itemsCount).fill('list_id=?').join(' OR ');
@@ -230,14 +316,15 @@ const buildDeleteListQuery = listsCount => {
     return `DELETE FROM lists WHERE ${placeholders};`;
 }
 
-// buduje insert query dla pojedynczego wiersza - głównie chodzi o VALUES (id_listy, w1, is_done), (id_listy, w2, is_done)
+// buduje insert query dla wierszy itemów
+// - głównie chodzi o VALUES (id, list_id, content1, is_done), (id, list_id, content2, is_done)
 const buildInsertItemsQuery = itemsCount => {
-    const placeholders = new Array(itemsCount).fill('(?, ?, ?)').join(', ');
-    return `INSERT INTO items (list_id, content, is_done) VALUES ${placeholders};`;
+    const placeholders = new Array(itemsCount).fill('(?, ?, ?, ?)').join(', ');
+    return `INSERT INTO items (id, list_id, content, is_done) VALUES ${placeholders};`;
 }
 
-// rozszerza tablicę wartości zapytania o id listy, bo dodajemy wartości w postaci (id_listy, w1), (id_listy, w2)
-const prepareInsertQueryValues = (listId, items, isDone) => {
-    const values = items.map(item => [listId, item, isDone]);
+// buduje tablicę dla wartości w kwerendzie insert
+const prepareInsertItemQueryValues = (listId, items) => {
+    const values = items.map(item => [item.id, listId, item.content, item.isDone]);
     return values.flat();
 }

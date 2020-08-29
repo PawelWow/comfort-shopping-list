@@ -12,7 +12,11 @@ import {
     KeyboardAvoidingView
 } from 'react-native';
 
+import { useDispatch } from 'react-redux';
+
 import shortid from 'shortid';
+
+import * as listActions from '../store/lists-actions';
 
 import MenuHeaderButton from '../components/MenuHeaderButton';
 import SaveHeaderButton from '../components/SaveHeaderButton';
@@ -47,6 +51,8 @@ const formReducer = (state, action ) => {
 const NewShoppingListScreen = props => {
     const [error, setError] = useState();
 
+    const dispatch = useDispatch();
+
     const [formState, dispatchFormState] = useReducer(formReducer, {
         inputValues: {
             title: '',
@@ -76,10 +82,14 @@ const NewShoppingListScreen = props => {
             return;
         }
 
-        const entries = splitContentToEntries(formState.inputValues.content, ',');
-
-        console.log('submit');
-        console.log(entries);
+        dispatch(listActions.addList(            
+            formState.inputValues.title,
+            formState.inputValues.shoppingDate,
+            formState.inputValues.shoppingHour,
+            new Date().toISOString(),
+            formState.inputValues.content
+        ));
+        
 
         props.navigation.goBack();
     };
