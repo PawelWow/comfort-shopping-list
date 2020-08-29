@@ -9,7 +9,7 @@ export const init = () => {
 
             // o ID listy baza sama ma sobie dbać
             query.executeSql(
-                'CREATE TABLE IF NOT EXISTS lists (id INTEGER PRIMARY KEY NOT NULL, title TEXT NOT NULL, shopping_date TEXT NULL, shopping_time TEXT NULL, creation_datetime TEXT NOT NULL);', 
+                'CREATE TABLE IF NOT EXISTS lists (id INTEGER PRIMARY KEY NOT NULL, title TEXT NOT NULL, shopping_date TEXT NULL, shopping_hour TEXT NULL, creation_datetime TEXT NOT NULL);', 
                 [],
                 () => {
                     resolve()
@@ -43,7 +43,7 @@ export const insertList = (title, shoppingDate, shoppingHour, creationDateTime, 
         db.transaction(tx => {
 
             tx.executeSql(
-                'INSERT INTO lists (title, shopping_date, shopping_time, creation_datetime) VALUES (?, ?, ?, ?);', 
+                'INSERT INTO lists (title, shopping_date, shopping_hour, creation_datetime) VALUES (?, ?, ?, ?);', 
                 [title, shoppingDate, shoppingHour, creationDateTime], 
                 (_, result) => {
                     resolve(result);
@@ -109,7 +109,7 @@ export const updateListData = (listId, newTitle, newShoppingDate, newShoppingTim
         db.transaction(tx => {
 
             tx.executeSql(
-                "UPDATE lists SET title='?', shopping_date='?', shopping_time='?' WHERE id=?;", 
+                "UPDATE lists SET title='?', shopping_date='?', shopping_hour='?' WHERE id=?;", 
                 [newTitle, newShoppingDate, newShoppingTime, listId], 
                 (_, result) => {
                     resolve(result);

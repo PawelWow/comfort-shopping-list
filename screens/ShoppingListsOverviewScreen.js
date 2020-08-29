@@ -1,11 +1,20 @@
-import React from 'react';
-import  { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import  { useSelector, useDispatch } from 'react-redux';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 
+import * as listsActions from '../store/lists-actions';
 import MenuHeaderButton from '../components/MenuHeaderButton';
 
 const ShoppingListsOverviewScreen = () => {
     const shoppingLists = useSelector(state => state.shoppingLists);
+    
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(listsActions.loadLists());
+    }, [dispatch])
+
+
     return (
         <View style={styles.screen}><Text>Shopping lists</Text>
         <FlatList
@@ -21,8 +30,7 @@ const ShoppingListsOverviewScreen = () => {
                             data={listData.item.items}
                             keyExtractor={item => item.id.toString()}
                             renderItem={ itemData => {
-                                console.log('inside flat list') ;
-                                console.log(itemData.item);
+
                                 return (
                                     <View><Text>{itemData.item.content}</Text></View>
                                     

@@ -1,29 +1,33 @@
-import { insertList, fetchItems, fetchItemsOfList } from '../helpers/db';
+import { insertList, fetchLists, fetchItems, fetchItemsOfList } from '../helpers/db';
 
 import shortid from 'shortid';
 
-import ShoppingList from '../models/ShoppingList';
 import Item from '../models/Item';
 import Separators from '../defs/Separators';
 
 export const ADD_LIST = 'ADD_LIST';
-export const SET_LIST = 'SET_LIST';
+export const SET_LISTS = 'SET_LISTS';
 
 export const addList = (title, shoppingDate, shoppingHour, creationDate, itemsInput) => {
     return async dispatch => {
 
         try {
 
-            // TODO poprawić query, które przyjmują itemy, żeby były traktowane po tablicy obiektów, nie po tablicy stringów
+            // new Item() dla każdego
             const items = createItems(itemsInput);
 
             // O ID listy dba DB, więc tak zostawiamy (nic nie kosztuje, bo po insercie i tak to ID wraca)
             const insertResult = await insertList(title, shoppingDate, shoppingHour, creationDate, items);
-            const shoppingList = new ShoppingList(insertResult.insertId, title, items, shoppingDate, shoppingHour, creationDate);
 
             dispatch({
-                type: ADD_LIST, newList: shoppingList
-            })
+                type: ADD_LIST,
+                id: insertResult.insertId,
+                title: title,                
+                shoppingDate: shoppingDate,
+                shoppingHour: shoppingHour,
+                creationDate: creationDate,
+                items: items
+            });
         } catch (error) {
             throw(error);
         }
@@ -31,7 +35,26 @@ export const addList = (title, shoppingDate, shoppingHour, creationDate, itemsIn
     }
 }
 
-// tworzy deskryptor pustego itemu
+export const loadLists = () => {
+    return async dispatch => {
+
+        try {
+
+            const listsDbResult = await fetchLists();
+            const itemsDbResult = await fetchItems();
+
+            dispatch({
+                type: SET_LISTS, listsData: listsDbResult.rows._array, itemsData: itemsDbResult.rows._array
+            });
+
+
+        } catch (error) {
+            throw (error);
+        }
+    }
+}
+
+// tworzy deskryptory itemów pochodzących z pola tekstowego użytkownika
 const createItems = (itemsInput) => {    
 
     // TODO przemyśłeć tego regexa. W takiej postaci jest ok, ale moża da sie krócej zapisać, tylko czy czytelniej?
