@@ -7,29 +7,6 @@ export const init = () => {
 
         db.transaction(query => {
 
-            // TODO usunąć dropy
-            query.executeSql(
-                'DROP TABLE IF EXISTS lists;', 
-                [],
-                () => {
-                    resolve()
-                }, 
-                (_, err) => {
-                    reject(err);
-                }
-            );
-
-            query.executeSql(
-                'DROP TABLE IF EXISTS items;',
-                [],
-                () => {
-                    resolve()
-                }, 
-                (_, err) => {
-                    reject(err);
-                }
-            );
-
             // o ID listy baza sama ma sobie dbać
             query.executeSql(
                 'CREATE TABLE IF NOT EXISTS lists (id INTEGER PRIMARY KEY NOT NULL, title TEXT NOT NULL, shopping_date TEXT NULL, shopping_time TEXT NULL, creation_datetime TEXT NOT NULL);', 
