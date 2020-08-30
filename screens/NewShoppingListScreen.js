@@ -14,16 +14,13 @@ import {
 
 import { useDispatch } from 'react-redux';
 
-import shortid from 'shortid';
-
 import * as listActions from '../store/lists-actions';
 
 import MenuHeaderButton from '../components/MenuHeaderButton';
 import SaveHeaderButton from '../components/SaveHeaderButton';
-
+import DateTime from '../components/DateTime';
 import Input from '../components/Input';
 import Platform from '../defs/Platform';
-import Item from '../models/Item';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
@@ -57,7 +54,7 @@ const NewShoppingListScreen = props => {
         inputValues: {
             title: '',
             content: '',
-            shoppingDate: '',
+            shoppingDate: new Date(),
             shoppingHour: ''
         },
         inputValidities: {
@@ -94,21 +91,7 @@ const NewShoppingListScreen = props => {
         props.navigation.goBack();
     };
 
-    // Dzieli cały tekst na wpisy
-    const splitContentToEntries = (text, separator) => {
-        const values = String(text).split(separator);
-
-        const entries = values.map( value => {
-                const id = shortid.generate();
-
-                return new Item(id, value)}
-            );
-
-        return entries;
-    }
-
     // Przycisk zapisywania po prawej w headerze
-    // TODO - useEffect, bo kliknięcie spowoduje zapis do bazy
     useEffect(() => {
         props.navigation.setOptions({
             headerRight: () => <SaveHeaderButton onPress={onFormSubmit} />
@@ -164,6 +147,7 @@ const NewShoppingListScreen = props => {
                     />
                                    
                 </View>
+                <DateTime />
             </ScrollView>
 
         </KeyboardAvoidingView>
