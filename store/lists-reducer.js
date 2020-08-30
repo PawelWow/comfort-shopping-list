@@ -15,7 +15,8 @@ export default (state = initialState, action) => {
                 action.title,
                 action.items,
                 action.shoppingDate,
-                action.shoppingHour,
+                action.shoppingReminderTime,
+                action.isShoppingScheduled,
                 action.creationDate
                 );
             return {
@@ -33,7 +34,8 @@ export default (state = initialState, action) => {
                     list.title,
                     shoppingListItems,
                     list.shopping_date,
-                    list.shopping_hour,
+                    list.shopping_reminder_time,
+                    list.is_shopping_scheduled,
                     list.creation_datetime
                 );
 

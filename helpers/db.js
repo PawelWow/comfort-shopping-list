@@ -5,13 +5,14 @@ const db = SQLite.openDatabase('shoppinglists.db');
 export const init = () => {
     const promise = new Promise((resolve, reject) => {
 
-        db.transaction(query => {
+        db.transaction(query => {         
 
             // o ID listy baza sama ma sobie dbać
             query.executeSql(
-                'CREATE TABLE IF NOT EXISTS lists (id INTEGER PRIMARY KEY NOT NULL, title TEXT NOT NULL, shopping_date TEXT NULL, shopping_hour TEXT NULL, creation_datetime TEXT NOT NULL);', 
+                'CREATE TABLE IF NOT EXISTS lists (id INTEGER PRIMARY KEY NOT NULL, title TEXT NOT NULL, shopping_datetime TEXT NULL, shopping_reminder_time TEXT NULL, is_shopping_scheduled INTEGER NOT NULL DEFAULT 0, creation_datetime TEXT NOT NULL);', 
                 [],
                 () => {
+
                     resolve()
                 }, 
                 (_, err) => {
@@ -21,7 +22,7 @@ export const init = () => {
 
             // o unikalność ID musimy zadbać sami, w ktracie tworzenia nowego itema przez usera
             query.executeSql(
-                'CREATE TABLE IF NOT EXISTS items (id TEXT PRIMARY KEY NOT NULL, list_id INTEGER NOT NULL, content TEXT NOT NULL, is_done TEXT NOT NULL DEFAULT 0);',
+                'CREATE TABLE IF NOT EXISTS items (id TEXT PRIMARY KEY NOT NULL, list_id INTEGER NOT NULL, content TEXT NOT NULL, is_done INTEGER NOT NULL DEFAULT 0);',
                 [],
                 () => {
                     resolve()
@@ -38,15 +39,17 @@ export const init = () => {
 };
 
 // dodaje nową listę z itemami (każdy item: id, content, isDone)
-export const insertList = (title, shoppingDate, shoppingHour, creationDateTime, items) => {
+export const insertList = (title, shoppingDate, shoppingReminderTime, isShoppingScheduled, creationDateTime, items) => {
     const promise = new Promise((resolve, reject) => {
         db.transaction(tx => {
 
             tx.executeSql(
-                'INSERT INTO lists (title, shopping_date, shopping_hour, creation_datetime) VALUES (?, ?, ?, ?);', 
-                [title, shoppingDate, shoppingHour, creationDateTime], 
+                'INSERT INTO lists (title, shopping_datetime, shopping_reminder_time, is_shopping_scheduled, creation_datetime) VALUES (?, ?, ?, ?, ?);', 
+                [title, shoppingDate, shoppingReminderTime, +isShoppingScheduled, creationDateTime], 
                 (_, result) => {
+
                     resolve(result);
+
 
                     const itemsCount = items.length;
                     if(itemsCount === 0) {
@@ -104,13 +107,13 @@ export const insertItems = (listId, items) => {
 }
 
 // aktualizuje podstawowe dane listy (bez itemów)
-export const updateListData = (listId, newTitle, newShoppingDate, newShoppingTime) => {
+export const updateListData = (listId, newTitle, newShoppingDate, newShoppingReminderTime, newIsShoppingScheduled) => {
     const promise = new Promise((resolve, reject) => {
-        db.transaction(tx => {
+        db.transaction(tx => {newIsShoppingScheduled
 
             tx.executeSql(
-                "UPDATE lists SET title='?', shopping_date='?', shopping_hour='?' WHERE id=?;", 
-                [newTitle, newShoppingDate, newShoppingTime, listId], 
+                "UPDATE lists SET title='?', shopping_datetime='?', shopping_reminder_time='?', is_shopping_scheduled='?' WHERE id=?;", 
+                [newTitle, newShoppingDate, newShoppingReminderTime, newIsShoppingScheduled, listId], 
                 (_, result) => {
                     resolve(result);
                 },
@@ -302,6 +305,6 @@ const buildInsertItemsQuery = itemsCount => {
 
 // buduje tablicę dla wartości w kwerendzie insert
 const prepareInsertItemQueryValues = (listId, items) => {
-    const values = items.map(item => [item.id, listId, item.content, item.isDone]);
+    const values = items.map(item => [item.id, listId, item.content, +item.isDone]);
     return values.flat();
 }

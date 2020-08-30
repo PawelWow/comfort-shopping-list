@@ -6,7 +6,7 @@ import ReduxThunk from 'redux-thunk';
 import shoppingListsReducer from './store/lists-reducer';
 import AppNavigator from './navigation/AppNavigator';
 
-import { init } from './helpers/db';
+import { init, dummyInsert } from './helpers/db';
 
 init().then(() => {
   console.log("Database initialized");

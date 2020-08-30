@@ -8,7 +8,7 @@ import Separators from '../defs/Separators';
 export const ADD_LIST = 'ADD_LIST';
 export const SET_LISTS = 'SET_LISTS';
 
-export const addList = (title, shoppingDate, shoppingHour, creationDate, itemsInput) => {
+export const addList = (title, shoppingDate, shoppingReminderTime, isShoppingScheduled, creationDate, itemsInput) => {
     return async dispatch => {
 
         try {
@@ -17,14 +17,15 @@ export const addList = (title, shoppingDate, shoppingHour, creationDate, itemsIn
             const items = createItems(itemsInput);
 
             // O ID listy dba DB, więc tak zostawiamy (nic nie kosztuje, bo po insercie i tak to ID wraca)
-            const insertResult = await insertList(title, shoppingDate, shoppingHour, creationDate, items);
+            const insertResult = await insertList(title, shoppingDate, shoppingReminderTime, isShoppingScheduled, creationDate, items);
 
             dispatch({
                 type: ADD_LIST,
                 id: insertResult.insertId,
                 title: title,                
                 shoppingDate: shoppingDate,
-                shoppingHour: shoppingHour,
+                shoppingReminderTime: shoppingReminderTime,
+                isShoppingScheduled: isShoppingScheduled,
                 creationDate: creationDate,
                 items: items
             });

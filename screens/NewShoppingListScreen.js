@@ -55,7 +55,9 @@ const NewShoppingListScreen = props => {
             title: '',
             content: '',
             shoppingDate: new Date(),
-            shoppingHour: ''
+            shoppingReminderTime: '',
+            // TODO poprawić jak będzie picker
+            isShoppingScheduled: false
         },
         inputValidities: {
             title: false,
@@ -81,8 +83,9 @@ const NewShoppingListScreen = props => {
 
         dispatch(listActions.addList(            
             formState.inputValues.title,
-            formState.inputValues.shoppingDate,
-            formState.inputValues.shoppingHour,
+            formState.inputValues.shoppingDate.toISOString(),
+            formState.inputValues.shoppingReminderTime,
+            formState.inputValues.isShoppingScheduled,
             new Date().toISOString(),
             formState.inputValues.content
         ));
