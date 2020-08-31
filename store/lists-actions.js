@@ -8,23 +8,35 @@ import Separators from '../defs/Separators';
 export const ADD_LIST = 'ADD_LIST';
 export const SET_LISTS = 'SET_LISTS';
 
-export const addList = (title, shoppingDate, shoppingReminderTime, isShoppingScheduled, creationDate, itemsInput) => {
+// TODO tutaj powinien być obiekt listy dodany, bo za dużo tych parametrów
+export const addList = (
+    title,
+    content,
+    creationDate,
+    isShoppingScheduled,
+    shoppingDate,
+    isReminderSet,
+    remindOnTime,
+    reminderHours,
+    reminderMinutes
+) => {
     return async dispatch => {
-
+ 
         try {
 
+            console.log('here');
             // new Item() dla każdego
-            const items = createItems(itemsInput);
+            const items = createItems(content);
 
             // O ID listy dba DB, więc tak zostawiamy (nic nie kosztuje, bo po insercie i tak to ID wraca)
-            const insertResult = await insertList(title, shoppingDate, shoppingReminderTime, isShoppingScheduled, creationDate, items);
+            const insertResult = await insertList(title, shoppingDate, reminderHours, isShoppingScheduled, creationDate, items);
 
             dispatch({
                 type: ADD_LIST,
                 id: insertResult.insertId,
                 title: title,                
                 shoppingDate: shoppingDate,
-                shoppingReminderTime: shoppingReminderTime,
+                shoppingReminderTime: reminderHours,
                 isShoppingScheduled: isShoppingScheduled,
                 creationDate: creationDate,
                 items: items

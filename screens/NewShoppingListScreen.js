@@ -54,15 +54,19 @@ const NewShoppingListScreen = props => {
         inputValues: {
             title: '',
             content: '',
+            isShoppingScheduled: false,
             shoppingDate: new Date(),
-            shoppingReminderTime: '',
-            // TODO poprawić jak będzie picker
-            isShoppingScheduled: false
+            isReminderSet: false,
+            remindOnTime: true,
+            reminderHours: 0,
+            reminderMinutes: 0,
+
         },
         inputValidities: {
             title: false,
             content: false
         },
+
         formIsValid: false
     });
 
@@ -83,13 +87,16 @@ const NewShoppingListScreen = props => {
 
         dispatch(listActions.addList(            
             formState.inputValues.title,
-            formState.inputValues.shoppingDate.toISOString(),
-            formState.inputValues.shoppingReminderTime,
+            formState.inputValues.content,
+            new DateTime().toISOString(),
+
             formState.inputValues.isShoppingScheduled,
-            new Date().toISOString(),
-            formState.inputValues.content
-        ));
-        
+            formState.inputValues.shoppingDate.toISOString(),
+            formState.inputValues.isReminderSet,
+            formState.inputValues.remindOnTime,
+            formState.inputValues.reminderHours,
+            formState.inputValues.reminderMinutes
+        ));        
 
         props.navigation.goBack();
     };
@@ -150,7 +157,7 @@ const NewShoppingListScreen = props => {
                     />
                                    
                 </View>
-                <DateTime />
+                <DateTime onDataChange={onInputChange} />
             </ScrollView>
 
         </KeyboardAvoidingView>
