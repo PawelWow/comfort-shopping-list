@@ -47,6 +47,14 @@ const Input = props => {
         if( props.isRequired && text.trim().length === 0) {
             isValid = false;
         }
+
+        if (props.min != null && +text < props.min) {
+            isValid = false;
+        }
+
+        if (props.max != null && +text > props.max) {
+            isValid = false;
+        }
         
         dispatch({ type: INPUT_CHANGE, value: text, isValid: isValid});
     }
@@ -64,7 +72,7 @@ const Input = props => {
     }
 
     return(
-        <View style={styles.control}>        
+        <View style={styles.control, {...props.containerStyle} }>        
             <Text style={styles.label}>{props.label}</Text>
             <TextInput
                 {...props}
