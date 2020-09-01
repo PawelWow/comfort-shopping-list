@@ -24,7 +24,6 @@ export const addList = (
  
         try {
 
-            console.log('here');
             // new Item() dla każdego
             const items = createItems(content);
 
@@ -41,6 +40,7 @@ export const addList = (
                 creationDate: creationDate,
                 items: items
             });
+            
         } catch (error) {
             throw(error);
         }

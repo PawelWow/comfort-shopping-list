@@ -90,28 +90,34 @@ const NewShoppingListScreen = props => {
 
     // Wykonuje akcję dodawania nowej listy
     // TODO - na razie tylko wraca do poprzedniej strony
-    const onFormSubmit = () => {
+    const onFormSubmit = useCallback(async () => {
 
         if(!formState.formIsValid){
             Alert.alert('Wrong data', 'Check the error in the form.', [ {text: 'OK '}]);
             return;
         }
 
-        dispatch(listActions.addList(            
-            formState.inputValues.title,
-            formState.inputValues.content,
-            new DateTime().toISOString(),
+        try {
+            await dispatch(listActions.addList(            
+                formState.inputValues.title,
+                formState.inputValues.content,
+                new Date().toISOString(),
+   
+                formState.switchValues.isShoppingScheduled,
+                formState.inputValues.shoppingDate.toISOString(),
+                formState.switchValues.isReminderSet,
+                formState.switchValues.remindOnTime,
+                formState.inputValues.reminderHours,
+                formState.inputValues.reminderMinutes
+            ));        
+    
+            props.navigation.goBack();            
+        } catch (err) {
+            setError(err.message);
+        }
 
-            formState.switchValues.isShoppingScheduled,
-            formState.inputValues.shoppingDate.toISOString(),
-            formState.switchValues.isReminderSet,
-            formState.switchValues.remindOnTime,
-            formState.inputValues.reminderHours,
-            formState.inputValues.reminderMinutes
-        ));        
 
-        props.navigation.goBack();
-    };
+    }, [dispatch, formState]);
 
     // Przycisk zapisywania po prawej w headerze
     useEffect(() => {
