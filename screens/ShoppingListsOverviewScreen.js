@@ -21,7 +21,7 @@ const ShoppingListsOverviewScreen = () => {
             <FlatList
                 data={shoppingLists}
                 keyExtractor={item => item.id.toString()}
-                renderItem={list => <List title={list.item.title} items={list.item.items} />   }
+                renderItem={list => <List data={list.item} />   }
             />                  
         </View>
     );

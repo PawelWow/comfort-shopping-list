@@ -4,15 +4,48 @@ import { FlatList, View, Text, StyleSheet } from 'react-native';
 
 import ListItem from './ListItem';
 
+const showShoppingDate = timeOptions => {
+    if(!timeOptions.isShoppingScheduled)
+    {
+        return;
+    }
+;
+    return(
+        <View>
+            <Text>Shopping time: {timeOptions.shoppingDate}</Text>
+            {showReminderOptions(timeOptions)}
+        </View>
+
+    );
+
+
+};
+
+const showReminderOptions = timeOptions => {
+    if(!timeOptions.isReminderSet) {
+        return;
+    }
+
+    return (
+        <View>
+            <Text>Remind on time: {timeOptions.remindOnTime.toString()}</Text>
+            <Text>Remind {timeOptions.reminderHours} hours and {timeOptions.reminderMinutes} before shopping date.</Text>
+        </View>
+    );
+}
+
 const List = props => {
+console.log(props.data.shoppingTimeOptions);
+
     return (
         <View style={styles.list}>
-            <Text style={styles.title}>{props.title}</Text>
+            <Text style={styles.title}>{props.data.title}</Text>
             <FlatList 
-                    data={props.items}
+                    data={props.data.items}
                     keyExtractor={item => item.id.toString()}
                     renderItem={ itemData =>  <ListItem content={itemData.item.content} /> }
                 />
+            { showShoppingDate(props.data.shoppingTimeOptions) }
         </View>
     );
 };

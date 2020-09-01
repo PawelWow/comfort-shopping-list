@@ -28,17 +28,31 @@ export const addList = (
             const items = createItems(content);
 
             // O ID listy dba DB, więc tak zostawiamy (nic nie kosztuje, bo po insercie i tak to ID wraca)
-            const insertResult = await insertList(title, shoppingDate, reminderHours, isShoppingScheduled, creationDate, items);
+            const insertResult = await insertList(
+                title,
+                items,
+                creationDate,
+                isShoppingScheduled, 
+                shoppingDate,
+                isReminderSet,
+                remindOnTime,
+                reminderHours,
+                reminderMinutes
+            );            
 
             dispatch({
                 type: ADD_LIST,
                 id: insertResult.insertId,
-                title: title,                
-                shoppingDate: shoppingDate,
-                shoppingReminderTime: reminderHours,
-                isShoppingScheduled: isShoppingScheduled,
+                title: title, 
+                items: items,               
                 creationDate: creationDate,
-                items: items
+                isShoppingScheduled: isShoppingScheduled,
+                shoppingDate: shoppingDate,
+                isReminderSet: isReminderSet,
+                remindOnTime: remindOnTime,
+                reminderHours: reminderHours,
+                reminderMinutes: reminderMinutes
+
             });
             
         } catch (error) {
