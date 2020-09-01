@@ -20,27 +20,38 @@ import MenuHeaderButton from '../components/MenuHeaderButton';
 import SaveHeaderButton from '../components/SaveHeaderButton';
 import DateTime from '../components/DateTime';
 import Input from '../components/Input';
+import SwitchOption from '../components/SwitchOption';
 import Platform from '../defs/Platform';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
+const FORM_SWITCH_UPDATE = 'FORM_SWITCH_UPDATE';
 
 const formReducer = (state, action ) => {
-    if(action.type !== FORM_INPUT_UPDATE){
-        return state;
-    }
-
-    const updatedValues = { ...state.inputValues, [action.input]: action.value };
-    const updatedValidities = { ...state.inputValidities, [action.input]: action.isValid };
-
-    let updatedFormIsValid = true;
-    for( const key in updatedValidities) {
-        updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
-    }
-
-    return {
-        formIsValid: updatedFormIsValid,
-        inputValidities: updatedValidities,
-        inputValues: updatedValues
+    switch(action.type) {
+        case FORM_INPUT_UPDATE:
+            const updatedValues = { ...state.inputValues, [action.input]: action.value };
+            const updatedValidities = { ...state.inputValidities, [action.input]: action.isValid };
+        
+            let updatedFormIsValid = true;
+            for( const key in updatedValidities) {
+                updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
+            }
+        
+            return {
+                formIsValid: updatedFormIsValid,
+                inputValidities: updatedValidities,
+                inputValues: updatedValues,
+                switchValues: state.switchValues,
+            }
+        case FORM_SWITCH_UPDATE:
+            return {
+                formIsValid: state.formIsValid,
+                inputValidities: state.inputValidities,
+                inputValues: state.inputValues,
+                switchValues: { ...state.switchValues, [action.switch]: action.value }
+            }
+        default:
+            return state;
     }
 };
 
@@ -54,17 +65,18 @@ const NewShoppingListScreen = props => {
         inputValues: {
             title: '',
             content: '',
-            isShoppingScheduled: false,
             shoppingDate: new Date(),
-            isReminderSet: false,
-            remindOnTime: true,
             reminderHours: 0,
             reminderMinutes: 0,
-
         },
         inputValidities: {
             title: false,
             content: false
+        },
+        switchValues: {
+            isShoppingScheduled: false,
+            isReminderSet: false,
+            remindOnTime: true,
         },
 
         formIsValid: false
@@ -90,10 +102,10 @@ const NewShoppingListScreen = props => {
             formState.inputValues.content,
             new DateTime().toISOString(),
 
-            formState.inputValues.isShoppingScheduled,
+            formState.switchValues.isShoppingScheduled,
             formState.inputValues.shoppingDate.toISOString(),
-            formState.inputValues.isReminderSet,
-            formState.inputValues.remindOnTime,
+            formState.switchValues.isReminderSet,
+            formState.switchValues.remindOnTime,
             formState.inputValues.reminderHours,
             formState.inputValues.reminderMinutes
         ));        
@@ -121,6 +133,14 @@ const NewShoppingListScreen = props => {
         [dispatchFormState]
         
     );
+
+    const onSwitchChange = useCallback((switchId, switchValue) => {
+        dispatchFormState({
+            type: FORM_SWITCH_UPDATE,
+            value: switchValue,
+            switch: switchId
+        });
+    }, [dispatchFormState]);
 
     return (
         <KeyboardAvoidingView
@@ -157,7 +177,19 @@ const NewShoppingListScreen = props => {
                     />
                                    
                 </View>
-                <DateTime onDataChange={onInputChange} />
+                <SwitchOption
+                    id="isShoppingScheduled"
+                    label="Set shopping time options:"
+                    initialValue={formState.switchValues.isShoppingScheduled}
+                    onSwitchChange={onSwitchChange}
+                />
+                { formState.switchValues.isShoppingScheduled 
+                    && <DateTime onDataChange={onInputChange} onOptionsChange={onSwitchChange} initialValues={{
+                        isReminderSet: formState.switchValues.isReminderSet,
+                        remindOnTime: formState.switchValues.remindOnTime
+                    }} />
+                }
+                
             </ScrollView>
 
         </KeyboardAvoidingView>

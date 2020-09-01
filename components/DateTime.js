@@ -1,18 +1,17 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Switch } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import Input from './Input';
+import SwitchOption from './SwitchOption';
 
 const DateTime = props => {
-    const [isEnabled, setIsEnabled] = useState(false);
     const [showPicker, setShowPicker] = useState(false);
     const [shoppingDateTime, setShoppingDateTime] = useState(new Date());
 
     // do remindera
     const [isReminderSet, setIsRemminderSet] = useState(false);
-    const [remindOnTime, setRemindOnTime] = useState(true);
-
+   
     const PICKER_MODE_DATE = 'date';
     const PICKER_MODE_TIME = 'time';
     const [pickerMode, setPickerMode] = useState(PICKER_MODE_DATE);   
@@ -43,31 +42,15 @@ const DateTime = props => {
         
     };
 
-    // TODO do tych switchy trzeba dorobić komponent, bo teraz po kilkukroć walić muszę te handlery
+    const onReminderSwitchValueChange = useCallback((switchId, switchValue) => {
+        props.onOptionsChange(switchId, switchValue);
+        setIsRemminderSet(switchValue);
+    }, [isReminderSet]);
 
-    const onSwitchShoppingOptionsValueChange = () => {
-        setIsEnabled(!isEnabled);
-        props.onDataChange('isShoppingScheduled', isEnabled, true);
-    }
+    return (
+        <View style={styles.mainContainer}>
 
-    const onSwitchReminderSetValueChange = () => {
-        setIsRemminderSet(!isReminderSet);
-        props.onDataChange('isReminderSet', isReminderSet, true);
-    }
 
-    const onSwitchRemindOnTime = () => {
-        setRemindOnTime(!remindOnTime);
-        props.onDataChange('remindOnTime', remindOnTime, true);
-    }
-
-// TODO wyświetlanie godzin trzeba poprawić, bo po co sekundy
-    const showDateTimePickerSection = () => {
-        if(!isEnabled) {
-            return;
-        }
-
-        return (
-            <View>
                 <View style={styles.dateTimePickerContainer}>
                         <Text>Date:</Text>
                         <Text style={styles.dateTimeLinkText} onPress={onShowDatePickerPress}>
@@ -92,16 +75,21 @@ const DateTime = props => {
                     )}
                 </View>
 
-                <View style={styles.controlsInLine}>
-                    <Text>Remind me shopping:</Text>
-                    <Switch value={isReminderSet} onValueChange={ onSwitchReminderSetValueChange } />
-                </View>
+                <SwitchOption
+                    id="isReminderSet"
+                    label="Remind me shopping:"
+                    initialValue={props.initialValues.isReminderSet}
+                    onSwitchChange={onReminderSwitchValueChange}
+                />
+
                 {isReminderSet && (
                     <View>
-                        <View style={styles.controlsInLine}>
-                            <Text>Remind me on time:</Text>
-                            <Switch value={remindOnTime} onValueChange={ onSwitchRemindOnTime } />
-                        </View>
+                        <SwitchOption
+                            id="remindOnTime"
+                            label="Remind me on time:"
+                            initialValue={props.initialValues.remindOnTime}
+                            onSwitchChange={props.onOptionsChange}
+                        />
 
                         <View style={styles.controlsInLine}>
                             <Input 
@@ -132,21 +120,6 @@ const DateTime = props => {
                     </View>
 
                 )}
-
-            </View>
-
-        );
-    } 
-
-    return (
-        <View style={styles.mainContainer}>
-
-            <View style={styles.controlsInLine}>
-                <Text>Set shopping time options:</Text>
-                <Switch value={isEnabled} onValueChange={onSwitchShoppingOptionsValueChange} />
-            </View>
-
-            {showDateTimePickerSection()}
             
         </View>
     );   
