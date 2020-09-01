@@ -5,7 +5,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Input from './Input';
 import SwitchOption from './SwitchOption';
 
-const DateTime = props => {
+const DateTimeOptions = props => {
     const [showPicker, setShowPicker] = useState(false);
     const [shoppingDateTime, setShoppingDateTime] = useState(new Date());
 
@@ -156,4 +156,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default DateTime;
+export default DateTimeOptions;

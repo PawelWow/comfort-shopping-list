@@ -18,7 +18,7 @@ import * as listActions from '../store/lists-actions';
 
 import MenuHeaderButton from '../components/MenuHeaderButton';
 import SaveHeaderButton from '../components/SaveHeaderButton';
-import DateTime from '../components/DateTime';
+import DateTimeOptions from '../components/DateTimeOptions';
 import Input from '../components/Input';
 import SwitchOption from '../components/SwitchOption';
 import Platform from '../defs/Platform';
@@ -190,7 +190,7 @@ const NewShoppingListScreen = props => {
                     onSwitchChange={onSwitchChange}
                 />
                 { formState.switchValues.isShoppingScheduled 
-                    && <DateTime onDataChange={onInputChange} onOptionsChange={onSwitchChange} initialValues={{
+                    && <DateTimeOptions onDataChange={onInputChange} onOptionsChange={onSwitchChange} initialValues={{
                         isReminderSet: formState.switchValues.isReminderSet,
                         remindOnTime: formState.switchValues.remindOnTime
                     }} />
