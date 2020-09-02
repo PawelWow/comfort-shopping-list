@@ -14,6 +14,7 @@ import {
 
 import { useDispatch } from 'react-redux';
 
+import ControlsIds from '../defs/ControlsIds';
 import * as listActions from '../store/lists-actions';
 
 import MenuHeaderButton from '../components/MenuHeaderButton';
@@ -63,20 +64,20 @@ const NewShoppingListScreen = props => {
 
     const [formState, dispatchFormState] = useReducer(formReducer, {
         inputValues: {
-            title: '',
-            content: '',
-            shoppingDate: new Date(),
-            reminderHours: 0,
-            reminderMinutes: 0,
+            [ControlsIds.title]: '',
+            [ControlsIds.content]: '',
+            [ControlsIds.shoppingDate]: new Date(),
+            [ControlsIds.reminderHours]: 0,
+            [ControlsIds.reminderMinutes]: 0,
         },
         inputValidities: {
-            title: false,
-            content: false
+            [ControlsIds.title]: false,
+            [ControlsIds.content]: false
         },
         switchValues: {
-            isShoppingScheduled: false,
-            isReminderSet: false,
-            remindOnTime: true,
+            [ControlsIds.isShoppingScheduled]: false,
+            [ControlsIds.isReminderSet]: false,
+            [ControlsIds.remindOnTime]: true,
         },
 
         formIsValid: false
@@ -156,7 +157,7 @@ const NewShoppingListScreen = props => {
             <ScrollView>
                 <View style={styles.screen}>
                     <Input
-                        id="title"
+                        id={ControlsIds.title}
                         label="Title"
                         errorMessage="Enter a title"
                         keyboardType="default"
@@ -168,7 +169,7 @@ const NewShoppingListScreen = props => {
                     />
 
                     <Input
-                        id="content"
+                        id={ControlsIds.content}
                         label="Content"
                         errorMessage="Enter shopping list content"
                         keyboardType="default"
@@ -183,7 +184,7 @@ const NewShoppingListScreen = props => {
                                    
                 </View>
                 <SwitchOption
-                    id="isShoppingScheduled"
+                    id={ControlsIds.isShoppingScheduled}
                     label="Set shopping time options:"
                     initialValue={formState.switchValues.isShoppingScheduled}
                     onSwitchChange={onSwitchChange}

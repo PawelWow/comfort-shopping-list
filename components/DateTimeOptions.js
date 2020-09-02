@@ -5,6 +5,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Input from './Input';
 import SwitchOption from './SwitchOption';
 
+import ControlsIds from '../defs/ControlsIds';
+
 const DateTimeOptions = props => {
     const [showPicker, setShowPicker] = useState(false);
     const [shoppingDateTime, setShoppingDateTime] = useState(new Date());
@@ -37,7 +39,7 @@ const DateTimeOptions = props => {
         if(selectedDate) {
             setShoppingDateTime(selectedDate);
             //inputIdentifier, inputValue, inputValidity
-            props.onDataChange('shoppingDate', selectedDate, true);
+            props.onDataChange(ControlsIds.shoppingDate, selectedDate, true);
         }
         
     };
@@ -76,7 +78,7 @@ const DateTimeOptions = props => {
                 </View>
 
                 <SwitchOption
-                    id="isReminderSet"
+                    id={ControlsIds.isReminderSet}
                     label="Remind me shopping:"
                     initialValue={props.initialValues.isReminderSet}
                     onSwitchChange={onReminderSwitchValueChange}
@@ -85,7 +87,7 @@ const DateTimeOptions = props => {
                 {isReminderSet && (
                     <View>
                         <SwitchOption
-                            id="remindOnTime"
+                            id={ControlsIds.remindOnTime}
                             label="Remind me on time:"
                             initialValue={props.initialValues.remindOnTime}
                             onSwitchChange={props.onOptionsChange}
@@ -94,7 +96,7 @@ const DateTimeOptions = props => {
                         <View style={styles.controlsInLine}>
                             <Input 
                                 containerStyle={styles.controlsInLine}
-                                id="reminderHours"
+                                id={ControlsIds.reminderHours}
                                 label="Hour"
                                 errorMessage="0-24 hours"
                                 keyboardType="number-pad"
@@ -106,7 +108,7 @@ const DateTimeOptions = props => {
                             />
                             <Input 
                                 containerStyle={styles.controlsInLine}
-                                id="reminderMinutes"
+                                id={ControlsIds.reminderMinutes}
                                 label="Minutes"
                                 errorMessage="0-60 minutes"
                                 keyboardType="number-pad"
