@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { FlatList, View, Text, StyleSheet } from 'react-native';
+import { FlatList, View, Text, StyleSheet, Button } from 'react-native';
 
 import ListItem from './ListItem';
 
@@ -45,6 +45,11 @@ const List = props => {
                     renderItem={ itemData =>  <ListItem content={itemData.item.content} /> }
                 />
             { showShoppingDate(props.data.shoppingTimeOptions) }
+            <View style={styles.buttonsContainer}>
+                <Button title="Delete" onPress={() => {}} />
+                <Button title="Set as current" onPress={() => {}} />
+                <Button title="Edit" onPress={() => {}} />
+            </View>
         </View>
     );
 };
@@ -68,6 +73,13 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 18,
         marginBottom: 5
+    },
+    buttonsContainer: {
+        flex: 1,
+        flexDirection:'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginVertical: 15,        
     }
 });
 
