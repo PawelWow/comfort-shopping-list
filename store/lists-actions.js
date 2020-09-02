@@ -12,7 +12,6 @@ export const SET_LISTS = 'SET_LISTS';
 export const addList = (
     title,
     content,
-    creationDate,
     isShoppingScheduled,
     shoppingDate,
     isReminderSet,
@@ -27,17 +26,19 @@ export const addList = (
             // new Item() dla każdego
             const items = createItems(content);
 
+            const creationDate = new Date();
+
             // O ID listy dba DB, więc tak zostawiamy (nic nie kosztuje, bo po insercie i tak to ID wraca)
             const insertResult = await insertList(
                 title,
                 items,
-                creationDate,
-                isShoppingScheduled, 
-                shoppingDate,
-                isReminderSet,
-                remindOnTime,
-                reminderHours,
-                reminderMinutes
+                creationDate.toISOString(),
+                +isShoppingScheduled, 
+                shoppingDate.toISOString(),
+                +isReminderSet,
+                +remindOnTime,
+                +reminderHours,
+                +reminderMinutes
             );            
 
             dispatch({

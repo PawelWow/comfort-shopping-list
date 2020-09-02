@@ -13,18 +13,18 @@ export default (state = initialState, action) => {
         case ADD_LIST:
             const reminderOptions = new ShoppingTimeOptions(
                 Boolean(action.isShoppingScheduled), 
-                action.shoppingDate,
+                action.shoppingDate.toISOString(),
                 Boolean(action.isReminderSet),
                 Boolean(action.remindOnTime),
-                action.reminderHours,
-                action.reminderMinutes
+                +action.reminderHours,
+                +action.reminderMinutes
             );
 
             const shoppingList = new ShoppingList(
                 action.id,
                 action.title,
                 action.items,
-                action.creationDate,
+                action.creationDate.toISOString(),
                 reminderOptions
                 );
             return {
@@ -45,7 +45,6 @@ export default (state = initialState, action) => {
                     list.reminder_hours,
                     list.reminder_minutes
                 );
-
 
                 return new ShoppingList(
                     list.id,

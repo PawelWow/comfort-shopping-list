@@ -35,7 +35,6 @@ const showReminderOptions = timeOptions => {
 }
 
 const List = props => {
-console.log(props.data.shoppingTimeOptions);
 
     return (
         <View style={styles.list}>

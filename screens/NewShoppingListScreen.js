@@ -101,10 +101,9 @@ const NewShoppingListScreen = props => {
             await dispatch(listActions.addList(            
                 formState.inputValues.title,
                 formState.inputValues.content,
-                new Date().toISOString(),
    
                 formState.switchValues.isShoppingScheduled,
-                formState.inputValues.shoppingDate.toISOString(),
+                formState.inputValues.shoppingDate,
                 formState.switchValues.isReminderSet,
                 formState.switchValues.remindOnTime,
                 formState.inputValues.reminderHours,

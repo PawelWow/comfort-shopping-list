@@ -6,10 +6,6 @@ class ShoppingList {
         this.creationDate = creationDate;
         this.shoppingTimeOptions = shoppingTimeOptions;
     };
-    // Tworzy deksryptor z nieustawionym id
-    static CreateDescriptor(title, items, creationDate, shoppingTimeOptions){
-        return new ShoppingList(null, title, items, creationDate, shoppingTimeOptions)
-    }
 }
 
 export default ShoppingList;
