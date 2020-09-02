@@ -94,7 +94,7 @@ const DateTimeOptions = props => {
                         <View style={styles.controlsInLine}>
                             <Input 
                                 containerStyle={styles.controlsInLine}
-                                id="reminderHour"
+                                id="reminderHours"
                                 label="Hour"
                                 errorMessage="0-24 hours"
                                 keyboardType="number-pad"
@@ -106,7 +106,7 @@ const DateTimeOptions = props => {
                             />
                             <Input 
                                 containerStyle={styles.controlsInLine}
-                                id="reminderHour"
+                                id="reminderMinutes"
                                 label="Minutes"
                                 errorMessage="0-60 minutes"
                                 keyboardType="number-pad"
