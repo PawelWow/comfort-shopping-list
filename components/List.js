@@ -1,40 +1,59 @@
-import React from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
-import { FlatList, View, Text, StyleSheet, Button } from 'react-native';
+import { FlatList, View, Text, StyleSheet, Button, Alert } from 'react-native';
 
 import ListItem from './ListItem';
 
-const showShoppingDate = timeOptions => {
-    if(!timeOptions.isShoppingScheduled)
-    {
-        return;
-    }
-;
-    return(
-        <View>
-            <Text>Shopping time: {timeOptions.shoppingDate}</Text>
-            {showReminderOptions(timeOptions)}
-        </View>
-
-    );
-
-
-};
-
-const showReminderOptions = timeOptions => {
-    if(!timeOptions.isReminderSet) {
-        return;
-    }
-
-    return (
-        <View>
-            <Text>Remind on time: {timeOptions.remindOnTime.toString()}</Text>
-            <Text>Remind {timeOptions.reminderHours} hours and {timeOptions.reminderMinutes} before shopping date.</Text>
-        </View>
-    );
-}
+import { removeList } from '../store/lists-actions';
 
 const List = props => {
+    const [error, setError] = useState();
+
+    const dispatch = useDispatch();
+
+    const onDeleteListPress = useCallback(async id => {
+
+        try {
+            await dispatch(removeList(id));
+        } catch (err) {
+            setError(err.message);
+        }
+    }, [dispatch]);
+
+    useEffect(() => {
+        if(error) {
+            Alert.alert('An error occured!', error, [{ text: 'OK' }]);
+        }
+    }, [error])
+
+    const showShoppingDate = timeOptions => {
+        if(!timeOptions.isShoppingScheduled)
+        {
+            return;
+        }
+
+        return(
+            <View>
+                <Text>Shopping time: {timeOptions.shoppingDate}</Text>
+                {showReminderOptions(timeOptions)}
+            </View>
+    
+        );  
+    };
+    
+    const showReminderOptions = timeOptions => {
+        if(!timeOptions.isReminderSet) {
+            return;
+        }
+    
+        return (
+            <View>
+                <Text>Remind on time: {timeOptions.remindOnTime.toString()}</Text>
+                <Text>Remind {timeOptions.reminderHours} hours and {timeOptions.reminderMinutes} before shopping date.</Text>
+            </View>
+        );
+    };
 
     return (
         <View style={styles.list}>
@@ -46,7 +65,7 @@ const List = props => {
                 />
             { showShoppingDate(props.data.shoppingTimeOptions) }
             <View style={styles.buttonsContainer}>
-                <Button title="Delete" onPress={() => {}} />
+                <Button title="Delete" onPress={() => { onDeleteListPress(props.data.id) }} />
                 <Button title="Set as current" onPress={() => {}} />
                 <Button title="Edit" onPress={() => {}} />
             </View>

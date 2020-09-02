@@ -188,21 +188,20 @@ export const updateItemDone = (itemId, isDone) => {
 }
 
 // usuwa podane listy i wszystkie ich itemy
-export const deleteLists = (listIds) => {
+export const deleteList = listId => {
     const promise = new Promise((resolve, reject) => {
         db.transaction(tx => {
 
-            const deleteItemsQuery = buildDeleteItemsQuery(listIds.length);
+            const deleteItemsQuery = buildDeleteItemsQuery();
             tx.executeSql(
                 deleteItemsQuery, 
-                listIds, 
+                [listId], 
                 (_, result) => {
                     resolve(result);
 
-                    const deleteListsQuery = buildDeleteListQuery(listIds.length);
                     tx.executeSql(
-                        deleteListsQuery, 
-                        listIds, 
+                        'DELETE FROM lists WHERE id=?;', 
+                        [listId], 
                         (_, result) => {
                             resolve(result);
                         },
@@ -227,10 +226,10 @@ export const deleteItems = listId => {
     const promise = new Promise((resolve, reject) => {
         db.transaction(tx => {
 
-            const deleteItemsQuery = buildDeleteItemsQuery(1);
+            const deleteItemsQuery = buildDeleteItemsQuery();
             tx.executeSql(
                 deleteItemsQuery, 
-                listId, 
+                [listId], 
                 (_, result) => {
                     resolve(result);
                 },
@@ -303,15 +302,8 @@ export const fetchItemsOfList = (listId) => {
 
 
 // buduje kwerendę usuwania itemów o podanej ilosći
-const buildDeleteItemsQuery = itemsCount => {
-    const placeholders = new Array(itemsCount).fill('list_id=?').join(' OR ');
-    return `DELETE FROM items WHERE ${placeholders};`;
-}
-
-// buduje kwerendę usuwania list o podanej ilości
-const buildDeleteListQuery = listsCount => {
-    const placeholders = new Array(listsCount).fill('id=?').join(' OR ');
-    return `DELETE FROM lists WHERE ${placeholders};`;
+const buildDeleteItemsQuery = () => {
+    return 'DELETE FROM items WHERE list_id=?;';
 }
 
 // buduje insert query dla wierszy itemów

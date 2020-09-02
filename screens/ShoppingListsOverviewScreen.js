@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import  { useSelector, useDispatch } from 'react-redux';
-import { View, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
 
 import * as listsActions from '../store/lists-actions';
 import MenuHeaderButton from '../components/MenuHeaderButton';
@@ -16,13 +16,28 @@ const ShoppingListsOverviewScreen = () => {
     }, [dispatch])
 
 
+    const showShoppingListsSection = () => {
+        if(shoppingLists.length > 0)
+        {
+            return(
+                <FlatList
+                    data={shoppingLists}
+                    keyExtractor={item => item.id.toString()}
+                    renderItem={list => <List data={list.item} />   }
+                />  
+            );
+        }
+
+        return (
+            <View>
+                <Text>No list created yet.</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.screen}>
-            <FlatList
-                data={shoppingLists}
-                keyExtractor={item => item.id.toString()}
-                renderItem={list => <List data={list.item} />   }
-            />                  
+                {showShoppingListsSection()}
         </View>
     );
 };

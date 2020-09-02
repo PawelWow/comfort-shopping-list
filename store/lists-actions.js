@@ -1,4 +1,4 @@
-import { insertList, fetchLists, fetchItems, fetchItemsOfList } from '../helpers/db';
+import { insertList, fetchLists, fetchItems, deleteList } from '../helpers/db';
 
 import shortid from 'shortid';
 
@@ -7,6 +7,7 @@ import Separators from '../defs/Separators';
 
 export const ADD_LIST = 'ADD_LIST';
 export const SET_LISTS = 'SET_LISTS';
+export const DELETE_LIST = 'DELETE_LIST';
 
 // TODO tutaj powinien być obiekt listy dodany, bo za dużo tych parametrów
 export const addList = (
@@ -19,6 +20,24 @@ export const addList = (
     reminderHours,
     reminderMinutes
 ) => {
+    // tworzy deskryptory itemów pochodzących z pola tekstowego użytkownika
+    const createItems = (itemsInput) => {    
+
+        // TODO przemyśłeć tego regexa. W takiej postaci jest ok, ale moża da sie krócej zapisać, tylko czy czytelniej?
+        const separators = new RegExp(
+            `\\s${Separators.voice}|${Separators.words}\\s|\\s${Separators.voice}${Separators.words}|${Separators.words}${Separators.voice}\\s`,
+            "gmi");
+
+        // puste itemy nie będą tworzone
+        const items = itemsInput.split(separators).filter(element => element.length !== 0);
+            
+        return items.map(itemContent => { 
+            const id = shortid.generate();
+            const content = itemContent.trim();
+            return new Item(id, content, false); 
+        });
+    }
+
     return async dispatch => {
  
         try {
@@ -82,21 +101,17 @@ export const loadLists = () => {
     }
 }
 
-// tworzy deskryptory itemów pochodzących z pola tekstowego użytkownika
-const createItems = (itemsInput) => {    
-
-    // TODO przemyśłeć tego regexa. W takiej postaci jest ok, ale moża da sie krócej zapisać, tylko czy czytelniej?
-    const separators = new RegExp(
-        `\\s${Separators.voice}|${Separators.words}\\s|\\s${Separators.voice}${Separators.words}|${Separators.words}${Separators.voice}\\s`,
-         "gmi");
-
-    // puste itemy nie będą tworzone
-    const items = itemsInput.split(separators).filter(element => element.length !== 0);
-        
-    return items.map(itemContent => { 
-        const id = shortid.generate();
-        const content = itemContent.trim();
-        return new Item(id, content, false); 
-    });
+export const removeList = id => {
+    return async dispatch => {
+        try {
+            await deleteList(id);
+            dispatch({ type: DELETE_LIST, deletedListId: id });
+            
+        } catch (error) {
+            throw( error);
+        }
+    }
 }
+
+
 
