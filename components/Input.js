@@ -1,10 +1,11 @@
 import React, {useReducer, useEffect} from 'react';
-import { View, Text, TextInput, StyleSheet, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
 
 import Colors from '../defs/Colors';
 
 const INPUT_CHANGE = 'INPUT_CHANGE';
 const INPUT_BLUR  = 'INPUT_BLUR';
+const INPUT_RESET = 'INPUT_RESET';
 
 const inputReducer = (state, action) => {
     switch(action.type) {
@@ -15,12 +16,17 @@ const inputReducer = (state, action) => {
                 isValid: action.isValid,
                 isTouched: true
             }
-
         case INPUT_BLUR:
             return {
                 ...state,
                 isTouched: true
             }
+        case INPUT_RESET: 
+            return {
+                value: '',
+                isValid: false,
+                isTouched: false
+            }            
         default:
             return state;
     }
@@ -38,6 +44,13 @@ const Input = props => {
             props.onInputChange(props.id, inputState.value, inputState.isValid);
         }
     }, [inputState]);
+
+    useEffect(() => {
+        if(props.shouldReset) {
+            dispatch({type: INPUT_RESET });
+        }
+
+    }, [props.shouldReset])
     
     // Przeprowadza walidację tekstu
     const onInputTextChange = text => {

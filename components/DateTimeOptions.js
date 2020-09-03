@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -16,7 +16,17 @@ const DateTimeOptions = props => {
    
     const PICKER_MODE_DATE = 'date';
     const PICKER_MODE_TIME = 'time';
-    const [pickerMode, setPickerMode] = useState(PICKER_MODE_DATE);   
+    const [pickerMode, setPickerMode] = useState(PICKER_MODE_DATE);  
+    
+    useEffect(() => {
+        if(!props.shouldReset) {
+            return;
+        }
+
+        setShowPicker(false);
+        setShoppingDateTime(new Date());
+
+    }, [props.shouldReset])
 
     // picker ustawienia daty zakupów
     const onShowDatePickerPress = () => {
@@ -82,6 +92,7 @@ const DateTimeOptions = props => {
                     label="Remind me shopping:"
                     initialValue={props.initialValues.isReminderSet}
                     onSwitchChange={onReminderSwitchValueChange}
+                    shouldReset={props.shouldReset}
                 />
 
                 {isReminderSet && (
@@ -91,6 +102,7 @@ const DateTimeOptions = props => {
                             label="Remind me on time:"
                             initialValue={props.initialValues.remindOnTime}
                             onSwitchChange={props.onOptionsChange}
+                            shouldReset={props.shouldReset}
                         />
 
                         <View style={styles.controlsInLine}>
@@ -102,6 +114,7 @@ const DateTimeOptions = props => {
                                 keyboardType="number-pad"
                                 returnKeyType="next"
                                 onInputChange={props.onDataChange} 
+                                shouldReset={props.shouldReset}
                                 required={isReminderSet}
                                 min={0}
                                 max={24}                                  
@@ -114,6 +127,7 @@ const DateTimeOptions = props => {
                                 keyboardType="number-pad"
                                 returnKeyType="next"
                                 onInputChange={props.onDataChange} 
+                                shouldReset={props.shouldReset}
                                 required={isReminderSet} 
                                 min={0}
                                 max={60}                                  

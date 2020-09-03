@@ -8,6 +8,16 @@ const SwitchOption = props => {
         props.onSwitchChange(props.id, isEnabled);
     }, [isEnabled]);
 
+    useEffect(() => {
+        if(!props.shouldReset) {
+            return;
+        }
+
+        const initiallyEnabled = props.initialValue ? props.initialValue : false;
+        setIsEnabled(initiallyEnabled);
+
+    }, [props.shouldReset])    
+
     return (
         <View style={styles.controlsInLine}>
             <Text style={styles.label}>{props.label}</Text>

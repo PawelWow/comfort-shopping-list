@@ -59,6 +59,8 @@ const formReducer = (state, action ) => {
 
 const NewShoppingListScreen = props => {
     const [error, setError] = useState();
+    // Czy mamy resetować formularz? 
+    const [shouldReset, setShouldReset] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -109,9 +111,12 @@ const NewShoppingListScreen = props => {
                 formState.switchValues.remindOnTime,
                 formState.inputValues.reminderHours,
                 formState.inputValues.reminderMinutes
-            ));        
-    
-            props.navigation.goBack();            
+            ));  
+            
+            setShouldReset(true); 
+            props.navigation.goBack(); 
+            setShouldReset(false);         
+            
         } catch (err) {
             setError(err.message);
         }
@@ -164,6 +169,7 @@ const NewShoppingListScreen = props => {
                         autCapitalize="sentences"
                         autoCorrect
                         returnKeyType="next"
+                        shouldReset={shouldReset}
                         onInputChange={onInputChange}
                         required
                     />
@@ -176,6 +182,7 @@ const NewShoppingListScreen = props => {
                         autoCapitalize="sentences"
                         autoCorrect
                         multiline
+                        shouldReset={shouldReset}
                         numberOfLines={5}
                         onInputChange={onInputChange}
                         required
@@ -186,14 +193,20 @@ const NewShoppingListScreen = props => {
                 <SwitchOption
                     id={ControlsIds.isShoppingScheduled}
                     label="Set shopping time options:"
-                    initialValue={formState.switchValues.isShoppingScheduled}
+                    initialValue={false}
                     onSwitchChange={onSwitchChange}
+                    shouldReset={shouldReset}
                 />
                 { formState.switchValues.isShoppingScheduled 
-                    && <DateTimeOptions onDataChange={onInputChange} onOptionsChange={onSwitchChange} initialValues={{
-                        isReminderSet: formState.switchValues.isReminderSet,
-                        remindOnTime: formState.switchValues.remindOnTime
-                    }} />
+                    && <DateTimeOptions
+                        onDataChange={onInputChange}
+                        onOptionsChange={onSwitchChange}
+                        initialValues={{
+                            isReminderSet: false,
+                            remindOnTime: true
+                        }} 
+                        shouldReset={shouldReset}
+                    />
                 }
                 
             </ScrollView>
