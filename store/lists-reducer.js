@@ -39,18 +39,18 @@ export default (state = initialState, action) => {
 
                 const reminderOptions = new ShoppingTimeOptions(
                     Boolean(list.is_shopping_scheduled),
-                    list.shopping_datetime,
+                    new Date(list.shopping_datetime),
                     Boolean(list.is_reminder_set),
                     Boolean(list.remind_on_time),
-                    list.reminder_hours,
-                    list.reminder_minutes
+                    list.reminder_hours.toString(),
+                    list.reminder_minutes.toString()
                 );
 
                 return new ShoppingList(
                     list.id,
                     list.title,
                     shoppingListItems,
-                    list.creation_datetime,
+                    new Date(list.creation_datetime),
                     reminderOptions,                    
                 );
 

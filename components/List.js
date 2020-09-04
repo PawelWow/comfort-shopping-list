@@ -38,7 +38,7 @@ const List = props => {
 
         return(
             <View>
-                <Text>Shopping time: {timeOptions.shoppingDate}</Text>
+                <Text>Shopping time: {timeOptions.shoppingDate.toString()}</Text>
                 {showReminderOptions(timeOptions)}
             </View>
     
