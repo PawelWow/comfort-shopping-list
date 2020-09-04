@@ -9,7 +9,7 @@ import ControlsIds from '../defs/ControlsIds';
 
 const DateTimeOptions = props => {
     const [showPicker, setShowPicker] = useState(false);
-    const [shoppingDateTime, setShoppingDateTime] = useState(new Date());
+    const [shoppingDateTime, setShoppingDateTime] = useState(props.initialValues.shoppingDate);
 
     // do remindera
     const [isReminderSet, setIsRemminderSet] = useState(false);
@@ -66,13 +66,12 @@ const DateTimeOptions = props => {
                 <View style={styles.dateTimePickerContainer}>
                         <Text>Date:</Text>
                         <Text style={styles.dateTimeLinkText} onPress={onShowDatePickerPress}>
-                            {!shoppingDateTime ? 'Pick date' : shoppingDateTime.toLocaleDateString()}
+                            {shoppingDateTime.toLocaleDateString()}
                         </Text> 
 
                         <Text style={{marginLeft: 15}}>Hour:</Text>
                         <Text style={styles.dateTimeLinkText} onPress={onShowTimePickerPress}>
-                            {!shoppingDateTime ? 'Pick hour' : shoppingDateTime.toLocaleTimeString([], 
-                                {hour: '2-digit', minute: '2-digit'})}
+                            {shoppingDateTime.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
                         </Text> 
 
 
@@ -109,8 +108,10 @@ const DateTimeOptions = props => {
                             <Input 
                                 containerStyle={styles.controlsInLine}
                                 id={ControlsIds.reminderHours}
-                                label="Hour"
+                                label="Hour"                                
                                 errorMessage="0-24 hours"
+                                initialValue={props.initialValues.reminderHours}
+                               
                                 keyboardType="number-pad"
                                 returnKeyType="next"
                                 onInputChange={props.onDataChange} 
@@ -124,6 +125,8 @@ const DateTimeOptions = props => {
                                 id={ControlsIds.reminderMinutes}
                                 label="Minutes"
                                 errorMessage="0-60 minutes"
+                                initialValue={props.initialValues.reminderMinutes}
+                                initiallyValid={props.editMode}  
                                 keyboardType="number-pad"
                                 returnKeyType="next"
                                 onInputChange={props.onDataChange} 

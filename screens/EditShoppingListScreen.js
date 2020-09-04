@@ -12,7 +12,7 @@ import {
     KeyboardAvoidingView
 } from 'react-native';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import ControlsIds from '../defs/ControlsIds';
 import * as listActions from '../store/lists-actions';
@@ -59,6 +59,13 @@ const formReducer = (state, action ) => {
 
 const EditShoppingListScreen = props => {
     const [error, setError] = useState();
+
+    const listId = props.route.params ? props.route.params.listId : null;
+    const editedList = useSelector(state => state.shoppingLists.find(list => list.id === listId));
+
+    console.log('props:');
+    console.log(props);
+    
     // Czy mamy resetować formularz? 
     const [shouldReset, setShouldReset] = useState(false);
 
@@ -66,20 +73,20 @@ const EditShoppingListScreen = props => {
 
     const [formState, dispatchFormState] = useReducer(formReducer, {
         inputValues: {
-            [ControlsIds.title]: '',
+            [ControlsIds.title]: editedList ? editedList.title : '',
             [ControlsIds.content]: '',
-            [ControlsIds.shoppingDate]: new Date(),
-            [ControlsIds.reminderHours]: 0,
-            [ControlsIds.reminderMinutes]: 0,
+            [ControlsIds.shoppingDate]: editedList ? editedList.shoppingTimeOptions.shoppingDate : new Date(),
+            [ControlsIds.reminderHours]: editedList ? editedList.shoppingTimeOptions.reminderHours : 0,
+            [ControlsIds.reminderMinutes]: editedList ? editedList.shoppingTimeOptions.reminderMinutes : 0,
         },
         inputValidities: {
             [ControlsIds.title]: false,
             [ControlsIds.content]: false
         },
         switchValues: {
-            [ControlsIds.isShoppingScheduled]: false,
-            [ControlsIds.isReminderSet]: false,
-            [ControlsIds.remindOnTime]: true,
+            [ControlsIds.isShoppingScheduled]: editedList ? editedList.shoppingTimeOptions.isShoppingScheduled : false,
+            [ControlsIds.isReminderSet]: editedList ? editedList.shoppingTimeOptions.isReminderSet : false,
+            [ControlsIds.remindOnTime]: editedList ? editedList.shoppingTimeOptions.remindOnTime : true,
         },
 
         formIsValid: false
@@ -101,17 +108,25 @@ const EditShoppingListScreen = props => {
         }
 
         try {
-            await dispatch(listActions.addList(            
-                formState.inputValues.title,
-                formState.inputValues.content,
-   
-                formState.switchValues.isShoppingScheduled,
-                formState.inputValues.shoppingDate,
-                formState.switchValues.isReminderSet,
-                formState.switchValues.remindOnTime,
-                formState.inputValues.reminderHours,
-                formState.inputValues.reminderMinutes
-            ));  
+            if(editedList) {
+                // edit
+            }
+            else 
+            {
+                // add new one
+                await dispatch(listActions.addList(            
+                    formState.inputValues.title,
+                    formState.inputValues.content,
+       
+                    formState.switchValues.isShoppingScheduled,
+                    formState.inputValues.shoppingDate,
+                    formState.switchValues.isReminderSet,
+                    formState.switchValues.remindOnTime,
+                    formState.inputValues.reminderHours,
+                    formState.inputValues.reminderMinutes
+                ));  
+            }
+
             
             setShouldReset(true); 
             props.navigation.goBack(); 
@@ -164,6 +179,8 @@ const EditShoppingListScreen = props => {
                     <Input
                         id={ControlsIds.title}
                         label="Title"
+                        initialValue={editedList ? editedList.title : ''}
+                        initiallyValid={!!editedList}
                         errorMessage="Enter a title"
                         keyboardType="default"
                         autCapitalize="sentences"
@@ -177,22 +194,21 @@ const EditShoppingListScreen = props => {
                     <Input
                         id={ControlsIds.content}
                         label="Content"
-                        errorMessage="Enter shopping list content"
+                        initialValue=''
                         keyboardType="default"
                         autoCapitalize="sentences"
                         autoCorrect
                         multiline
                         shouldReset={shouldReset}
                         numberOfLines={5}
-                        onInputChange={onInputChange}
-                        required
-                     
+                        onInputChange={onInputChange}                                             
                     />
                                    
                 </View>
                 <SwitchOption
                     id={ControlsIds.isShoppingScheduled}
                     label="Set shopping time options:"
+                    initialValue={editedList ? editedList.shoppingTimeOptions.isShoppingScheduled : false}
                     initialValue={false}
                     onSwitchChange={onSwitchChange}
                     shouldReset={shouldReset}
@@ -202,9 +218,13 @@ const EditShoppingListScreen = props => {
                         onDataChange={onInputChange}
                         onOptionsChange={onSwitchChange}
                         initialValues={{
-                            isReminderSet: false,
-                            remindOnTime: true
+                            shoppingDate: editedList ? editedList.shoppingTimeOptions.shoppingDate : new Date(),
+                            isReminderSet: editedList ? editedList.shoppingTimeOptions.isReminderSet : false,
+                            remindOnTime: editedList ? editedList.shoppingTimeOptions.remindOnTime : true,
+                            reminderHours: editedList ? editedList.shoppingTimeOptions.reminderHours : '0',
+                            reminderMinutes:  editedList ? editedList.shoppingTimeOptions.reminderMinutes : '0'
                         }} 
+                        editMode={!!editedList}
                         shouldReset={shouldReset}
                     />
                 }
@@ -223,10 +243,14 @@ const styles = StyleSheet.create({
 });
 
 export const ScreenOptions = navData => {
+    console.log('nav data');
+    console.log(navData);
     return {
         headerTitle: 'Create a new list',
         headerLeft: () => <MenuHeaderButton onPress={() => navData.navigation.toggleDrawer() } />
     }
 };
+
+export const SCREEN_NAME = 'EditShoppingList';
 
 export default EditShoppingListScreen;

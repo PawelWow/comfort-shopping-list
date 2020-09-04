@@ -6,23 +6,26 @@ import { Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator, DrawerItemList  } from '@react-navigation/drawer';
 
-import CurrentShoppingListScreen, {ScreenOptions as currentShoppingListScreenOptions, ScreenOptions} from '../screens/CurrentShoppingListScreen';
-import EditShoppingListScreen, {ScreenOptions as editShoppingListScreenOptions} from '../screens/EditShoppingListScreen';
+import CurrentShoppingListScreen, {ScreenOptions as currentShoppingListScreenOptions} from '../screens/CurrentShoppingListScreen';
+import EditShoppingListScreen, {
+    ScreenOptions as editShoppingListScreenOptions,
+    SCREEN_NAME as EDIT_SCREEN_NAME, 
+} from '../screens/EditShoppingListScreen';
 import ShoppingListsOverviewScreen, {ScreenOptions as shoppingListOverviewScreenOptions} from '../screens/ShoppingListsOverviewScreen';
 
 import IconsNames from '../defs/IconsNames';
 
-const NewShoppingListStackNavigator = createStackNavigator();
+const EditShoppingListStackNavigator = createStackNavigator();
 
-export const NewShoppingListNavigator = () => {
+export const EditShoppingListNavigator = () => {
     return(
-        <NewShoppingListStackNavigator.Navigator>
-            <NewShoppingListStackNavigator.Screen
-                name="NewShoppingList"
+        <EditShoppingListStackNavigator.Navigator>
+            <EditShoppingListStackNavigator.Screen
+                name={EDIT_SCREEN_NAME}
                 component={EditShoppingListScreen}
                 options={editShoppingListScreenOptions}
             />
-        </NewShoppingListStackNavigator.Navigator>
+        </EditShoppingListStackNavigator.Navigator>
     );
 }
 
@@ -37,8 +40,8 @@ export const ShoppingListsNavigator = () => {
                 options={currentShoppingListScreenOptions}
             />
             <ShoppingListsStackNavigator.Screen
-                name="NewShoppingList"
-                component={NewShoppingListNavigator}
+                name={EDIT_SCREEN_NAME}
+                component={EditShoppingListNavigator}
             />
             <ShoppingListsStackNavigator.Screen
                 name="ShoppingListsOverview"
@@ -60,8 +63,8 @@ export const ManageShoppingListsNavigator = () => {
                 options={shoppingListOverviewScreenOptions}
             />               
             <ManageShoppingListsStackNavigator.Screen
-                name="NewShoppingList"
-                component={NewShoppingListNavigator}
+                name={EDIT_SCREEN_NAME}
+                component={EditShoppingListNavigator}
             />         
         </ManageShoppingListsStackNavigator.Navigator>
     );
@@ -94,7 +97,7 @@ export const MenuNavigator = () => {
                 />
             <MenuDrawerNavigator.Screen
                 name="New shopping list"
-                component={NewShoppingListNavigator}
+                component={EditShoppingListNavigator}
                 options={() => createDrawerIcon(IconsNames.create)}
                 />
             <MenuDrawerNavigator.Screen

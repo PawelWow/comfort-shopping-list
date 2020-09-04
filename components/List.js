@@ -1,10 +1,9 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-
 import { FlatList, View, Text, StyleSheet, Button, Alert } from 'react-native';
 
 import ListItem from './ListItem';
-
+import { SCREEN_NAME } from '../screens/EditShoppingListScreen';
 import { removeList } from '../store/lists-actions';
 
 const List = props => {
@@ -21,11 +20,15 @@ const List = props => {
         }
     }, [dispatch]);
 
+    const onEditListPress = id => {
+        props.navigation.navigate(SCREEN_NAME, {listId: id});
+    };
+
     useEffect(() => {
         if(error) {
             Alert.alert('An error occured!', error, [{ text: 'OK' }]);
         }
-    }, [error])
+    }, [error]);
 
     const showShoppingDate = timeOptions => {
         if(!timeOptions.isShoppingScheduled)
@@ -66,8 +69,8 @@ const List = props => {
             { showShoppingDate(props.data.shoppingTimeOptions) }
             <View style={styles.buttonsContainer}>
                 <Button title="Delete" onPress={() => { onDeleteListPress(props.data.id) }} />
-                <Button title="Set as current" onPress={() => {}} />
-                <Button title="Edit" onPress={() => {}} />
+                <Button title="Set as current" onPress={() => { }} />
+                <Button title="Edit" onPress={() => { onEditListPress(props.data.id) }} />
             </View>
         </View>
     );

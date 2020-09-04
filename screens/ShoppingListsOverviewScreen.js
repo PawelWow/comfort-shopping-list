@@ -6,7 +6,7 @@ import * as listsActions from '../store/lists-actions';
 import MenuHeaderButton from '../components/MenuHeaderButton';
 import List from '../components/List';
 
-const ShoppingListsOverviewScreen = () => {
+const ShoppingListsOverviewScreen = props => {
     const shoppingLists = useSelector(state => state.shoppingLists);
     
     const dispatch = useDispatch();
@@ -15,7 +15,6 @@ const ShoppingListsOverviewScreen = () => {
         dispatch(listsActions.loadLists());
     }, [dispatch])
 
-
     const showShoppingListsSection = () => {
         if(shoppingLists.length > 0)
         {
@@ -23,7 +22,7 @@ const ShoppingListsOverviewScreen = () => {
                 <FlatList
                     data={shoppingLists}
                     keyExtractor={item => item.id.toString()}
-                    renderItem={list => <List data={list.item} />   }
+                    renderItem={list => <List data={list.item} navigation={props.navigation} />   }
                 />  
             );
         }
