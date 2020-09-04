@@ -41,7 +41,8 @@ export const ShoppingListsNavigator = () => {
             />
             <ShoppingListsStackNavigator.Screen
                 name={EDIT_SCREEN_NAME}
-                component={EditShoppingListNavigator}
+                component={EditShoppingListScreen}
+                options={editShoppingListScreenOptions}
             />
             <ShoppingListsStackNavigator.Screen
                 name="ShoppingListsOverview"
@@ -64,7 +65,8 @@ export const ManageShoppingListsNavigator = () => {
             />               
             <ManageShoppingListsStackNavigator.Screen
                 name={EDIT_SCREEN_NAME}
-                component={EditShoppingListNavigator}
+                component={EditShoppingListScreen}
+                options={editShoppingListScreenOptions}
             />         
         </ManageShoppingListsStackNavigator.Navigator>
     );
@@ -95,6 +97,7 @@ export const MenuNavigator = () => {
                 component={ShoppingListsNavigator}
                 options={() => createDrawerIcon(IconsNames.paper)} 
                 />
+                
             <MenuDrawerNavigator.Screen
                 name="New shopping list"
                 component={EditShoppingListNavigator}

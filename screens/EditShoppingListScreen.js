@@ -62,9 +62,6 @@ const EditShoppingListScreen = props => {
 
     const listId = props.route.params ? props.route.params.listId : null;
     const editedList = useSelector(state => state.shoppingLists.find(list => list.id === listId));
-
-    console.log('props:');
-    console.log(props);
     
     // Czy mamy resetować formularz? 
     const [shouldReset, setShouldReset] = useState(false);
@@ -209,7 +206,6 @@ const EditShoppingListScreen = props => {
                     id={ControlsIds.isShoppingScheduled}
                     label="Set shopping time options:"
                     initialValue={editedList ? editedList.shoppingTimeOptions.isShoppingScheduled : false}
-                    initialValue={false}
                     onSwitchChange={onSwitchChange}
                     shouldReset={shouldReset}
                 />
@@ -243,8 +239,14 @@ const styles = StyleSheet.create({
 });
 
 export const ScreenOptions = navData => {
-    console.log('nav data');
-    console.log(navData);
+    const routeParams = navData.route.params ? navData.route.params : {};
+
+    if( routeParams.listId ){
+        return {
+            headerTitle: 'Edit list'
+        }
+    }
+
     return {
         headerTitle: 'Create a new list',
         headerLeft: () => <MenuHeaderButton onPress={() => navData.navigation.toggleDrawer() } />
