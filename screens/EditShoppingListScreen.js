@@ -57,7 +57,7 @@ const formReducer = (state, action ) => {
 };
 
 
-const NewShoppingListScreen = props => {
+const EditShoppingListScreen = props => {
     const [error, setError] = useState();
     // Czy mamy resetować formularz? 
     const [shouldReset, setShouldReset] = useState(false);
@@ -229,4 +229,4 @@ export const ScreenOptions = navData => {
     }
 };
 
-export default NewShoppingListScreen;
+export default EditShoppingListScreen;

@@ -7,7 +7,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator, DrawerItemList  } from '@react-navigation/drawer';
 
 import CurrentShoppingListScreen, {ScreenOptions as currentShoppingListScreenOptions, ScreenOptions} from '../screens/CurrentShoppingListScreen';
-import NewShoppingListScreen, {ScreenOptions as newShoppingListScreenOptions} from '../screens/NewShoppingListScreen';
+import EditShoppingListScreen, {ScreenOptions as editShoppingListScreenOptions} from '../screens/EditShoppingListScreen';
 import ShoppingListsOverviewScreen, {ScreenOptions as shoppingListOverviewScreenOptions} from '../screens/ShoppingListsOverviewScreen';
 
 import IconsNames from '../defs/IconsNames';
@@ -19,8 +19,8 @@ export const NewShoppingListNavigator = () => {
         <NewShoppingListStackNavigator.Navigator>
             <NewShoppingListStackNavigator.Screen
                 name="NewShoppingList"
-                component={NewShoppingListScreen}
-                options={newShoppingListScreenOptions}
+                component={EditShoppingListScreen}
+                options={editShoppingListScreenOptions}
             />
         </NewShoppingListStackNavigator.Navigator>
     );
