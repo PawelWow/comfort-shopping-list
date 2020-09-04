@@ -125,13 +125,13 @@ export const insertItems = (listId, items) => {
 }
 
 // aktualizuje podstawowe dane listy (bez itemów)
-export const updateListData = (listId, newTitle, newShoppingDate, newShoppingReminderTime, newIsShoppingScheduled) => {
+export const updateListData = (title, isShoppingScheduled, shoppingDate, isReminderSet, remindOnTime, reminderHours, reminderMinutes, id) => {
     const promise = new Promise((resolve, reject) => {
         db.transaction(tx => {newIsShoppingScheduled
 
             tx.executeSql(
-                "UPDATE lists SET title='?', creation_datetime='?', is_shopping_scheduled='?', shopping_datetime='?', is_reminder_set='?', remind_on_time='?', reminder_hours='?', reminder_minutes='?' WHERE id=?;", 
-                [title, creationDate, isShoppingScheduled,shoppingDate, isReminderSet, remindOnTime, reminderHours, reminderMinutes], 
+                "UPDATE lists SET title='?', is_shopping_scheduled='?', shopping_datetime='?', is_reminder_set='?', remind_on_time='?', reminder_hours='?', reminder_minutes='?' WHERE id=?;", 
+                [title, isShoppingScheduled, shoppingDate, isReminderSet, remindOnTime, reminderHours, reminderMinutes, id], 
                 (_, result) => {
                     resolve(result);
                 },

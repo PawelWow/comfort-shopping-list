@@ -1,4 +1,4 @@
-import { ADD_LIST, SET_LISTS, DELETE_LIST } from './lists-actions';
+import { ADD_LIST, SET_LISTS, DELETE_LIST, EDIT_LIST } from './lists-actions';
 
 import Item from '../models/Item';
 import ShoppingList from '../models/ShoppingList';
@@ -59,6 +59,9 @@ export default (state = initialState, action) => {
             return {
                 shoppingLists: shoppingLists
             };
+        case EDIT_LIST: 
+            // TODO
+            return state;
         case DELETE_LIST:
             return {
                 shoppingLists: state.shoppingLists.filter(list => list.id !== action.deletedListId)

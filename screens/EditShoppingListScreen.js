@@ -106,7 +106,7 @@ const EditShoppingListScreen = props => {
 
         try {
             if(editedList) {
-                // edit
+                // TODO edit
             }
             else 
             {
