@@ -7,7 +7,7 @@ import Separators from '../defs/Separators';
 
 export const ADD_LIST = 'ADD_LIST';
 export const SET_LISTS = 'SET_LISTS';
-export const EDIT_LIST = 'DELETE_LIST';
+export const EDIT_LIST = 'EDIT_LIST';
 export const DELETE_LIST = 'DELETE_LIST';
 
 // TODO tutaj powinien być obiekt listy dodany, bo za dużo tych parametrów
@@ -28,15 +28,16 @@ export const addList = (
             // new Item() dla każdego
             const items = createItems(content);
 
-            const creationDate = new Date();
+            const creationDateIso = new Date().toISOString();
+            const shoppingDateIso = shoppingDate.toISOString();
 
             // O ID listy dba DB, więc tak zostawiamy (nic nie kosztuje, bo po insercie i tak to ID wraca)
             const insertResult = await insertList(
                 title,
                 items,
-                creationDate.toISOString(),
+                creationDateIso,
                 +isShoppingScheduled, 
-                shoppingDate.toISOString(),
+                shoppingDateIso,
                 +isReminderSet,
                 +remindOnTime,
                 +reminderHours,
@@ -48,9 +49,9 @@ export const addList = (
                 id: insertResult.insertId,
                 title: title, 
                 items: items,               
-                creationDate: creationDate,
+                creationDateIso: creationDateIso,
                 isShoppingScheduled: isShoppingScheduled,
-                shoppingDate: shoppingDate,
+                shoppingDateIso: shoppingDateIso,
                 isReminderSet: isReminderSet,
                 remindOnTime: remindOnTime,
                 reminderHours: reminderHours,
@@ -70,6 +71,7 @@ export const editList = (
     title,
     content,
     existingItems,
+    creationDateIso,
     isShoppingScheduled,
     shoppingDate,
     isReminderSet,
@@ -81,10 +83,6 @@ export const editList = (
     return async dispatch => {
  
         try {
-
-            // new Item() dla każdego
-            const items = createItems(content);
-
 /*
             TODO:
             - update danych
@@ -92,31 +90,36 @@ export const editList = (
              - usunięcie itemów ze stanu i z bazy
 */
 
+            const shoppingDateIso = shoppingDate.toISOString();
 
             await updateListData(
                 title,
-                isShoppingScheduled,
-                shoppingDate,
-                isReminderSet,
-                remindOnTime,
-                reminderHours,
-                reminderMinutes,
+                +isShoppingScheduled,
+                shoppingDateIso,
+                +isReminderSet,
+                +remindOnTime,
+                +reminderHours,
+                +reminderMinutes,
                 id
             );
 
-            await insertItems(id, items);
+            // new Item() dla każdego
+            const items = createItems(content);
+            if(items.length > 0){
+                await insertItems(id, items);
+            }
 
             const updatedItems = existingItems.concat(items);
 
 
             dispatch({
                 type: EDIT_LIST,
-                id: insertResult.insertId,
+                id: id,
                 title: title, 
                 items: updatedItems,               
-                creationDate: creationDate,
+                creationDateIso: creationDateIso,
                 isShoppingScheduled: isShoppingScheduled,
-                shoppingDate: shoppingDate,
+                shoppingDateIso: shoppingDateIso,
                 isReminderSet: isReminderSet,
                 remindOnTime: remindOnTime,
                 reminderHours: reminderHours,

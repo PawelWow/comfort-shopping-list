@@ -3,7 +3,7 @@ class ShoppingTimeOptions {
 
         // Czy zakupy w ogóle są planowane?
         this.isShoppingScheduled = isShoppingScheduled;
-        this.shoppingDate = shoppingDate;
+        this.shoppingDate = shoppingDate; // isostring
         // Czy włączyć reminder
         this.isReminderSet = isReminderSet;
         // Czy wysłać przypomnienie w godzinie zakupów

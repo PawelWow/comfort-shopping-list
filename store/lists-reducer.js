@@ -12,20 +12,20 @@ export default (state = initialState, action) => {
     switch(action.type) {
         case ADD_LIST:
             const reminderOptions = new ShoppingTimeOptions(
-                Boolean(action.isShoppingScheduled), 
-                action.shoppingDate.toISOString(),
-                Boolean(action.isReminderSet),
-                Boolean(action.remindOnTime),
-                +action.reminderHours,
-                +action.reminderMinutes
+                action.isShoppingScheduled, 
+                action.shoppingDateIso,
+                action.isReminderSet,
+                action.remindOnTime,
+                action.reminderHours.toString(),
+                action.reminderMinutes.toString()
             );
 
             const shoppingList = new ShoppingList(
-                action.id,
-                action.title,
-                action.items,
-                action.creationDate.toISOString(),
-                reminderOptions
+                    action.id,
+                    action.title,
+                    action.items,
+                    action.creationDateIso,
+                    reminderOptions
                 );
             return {
                 shoppingLists: state.shoppingLists.concat(shoppingList)
@@ -39,7 +39,7 @@ export default (state = initialState, action) => {
 
                 const reminderOptions = new ShoppingTimeOptions(
                     Boolean(list.is_shopping_scheduled),
-                    new Date(list.shopping_datetime),
+                    list.shopping_datetime,
                     Boolean(list.is_reminder_set),
                     Boolean(list.remind_on_time),
                     list.reminder_hours.toString(),
@@ -50,7 +50,7 @@ export default (state = initialState, action) => {
                     list.id,
                     list.title,
                     shoppingListItems,
-                    new Date(list.creation_datetime),
+                    list.creation_datetime,
                     reminderOptions,                    
                 );
 
@@ -60,11 +60,33 @@ export default (state = initialState, action) => {
                 shoppingLists: shoppingLists
             };
         case EDIT_LIST: 
-            // TODO
-            return state;
-        case DELETE_LIST:
+            const updatedReminderOptions = new ShoppingTimeOptions(
+                action.isShoppingScheduled,
+                action.shoppingDateIso,
+                action.isReminderSet,
+                action.remindOnTime,
+                action.reminderHours,
+                action.reminderMinutes
+            );
+
+            const updatedShoppingList = new ShoppingList(
+                action.id,
+                action.title,
+                action.items,
+                action.creationDateIso,
+                updatedReminderOptions,                    
+            );
+
+            const updatedShoppingLists = state.shoppingLists.filter(list => list.id !== updatedShoppingList.id);
+            updatedShoppingLists.push(updatedShoppingList);
+
             return {
-                shoppingLists: state.shoppingLists.filter(list => list.id !== action.deletedListId)
+                shoppingLists: updatedShoppingLists
+            };
+        case DELETE_LIST:
+            const reducedShoppingLists = state.shoppingLists.filter(list => list.id !== action.deletedListId);
+            return {
+                shoppingLists: reducedShoppingLists
             };
 
         default:

@@ -81,8 +81,6 @@ const DateTimeOptions = props => {
                             mode={pickerMode}
                             onChange={onDateTimeChanged}
                         />
-
-                        
                     )}
                 </View>
 
@@ -169,9 +167,6 @@ const styles = StyleSheet.create({
         color: 'blue',
         textDecorationLine: 'underline',
         fontStyle: 'italic'
-    },
-    reminderContainer: {
-
     }
 });
 

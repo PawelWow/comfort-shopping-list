@@ -127,10 +127,10 @@ export const insertItems = (listId, items) => {
 // aktualizuje podstawowe dane listy (bez itemów)
 export const updateListData = (title, isShoppingScheduled, shoppingDate, isReminderSet, remindOnTime, reminderHours, reminderMinutes, id) => {
     const promise = new Promise((resolve, reject) => {
-        db.transaction(tx => {newIsShoppingScheduled
+        db.transaction(tx => {
 
             tx.executeSql(
-                "UPDATE lists SET title='?', is_shopping_scheduled='?', shopping_datetime='?', is_reminder_set='?', remind_on_time='?', reminder_hours='?', reminder_minutes='?' WHERE id=?;", 
+                "UPDATE lists SET title=?, is_shopping_scheduled=?, shopping_datetime=?, is_reminder_set=?, remind_on_time=?, reminder_hours=?, reminder_minutes=? WHERE id=?;", 
                 [title, isShoppingScheduled, shoppingDate, isReminderSet, remindOnTime, reminderHours, reminderMinutes, id], 
                 (_, result) => {
                     resolve(result);
@@ -151,7 +151,7 @@ export const updateItemContent = (itemId, newContent) => {
         db.transaction(tx => {
 
             tx.executeSql(
-                "UPDATE items SET content='?' WHERE id=?;", 
+                "UPDATE items SET content=? WHERE id=?;", 
                 [newContent, itemId], 
                 (_, result) => {
                     resolve(result);
@@ -172,7 +172,7 @@ export const updateItemDone = (itemId, isDone) => {
         db.transaction(tx => {
 
             tx.executeSql(
-                "UPDATE items SET is_done='?' WHERE id=?;", 
+                "UPDATE items SET is_done=? WHERE id=?;", 
                 [isDone, itemId], 
                 (_, result) => {
                     resolve(result);

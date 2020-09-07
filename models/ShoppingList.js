@@ -3,7 +3,7 @@ class ShoppingList {
         this.id = id;
         this.title = title;
         this.items = items;
-        this.creationDate = creationDate;
+        this.creationDate = creationDate; // isostring
         this.shoppingTimeOptions = shoppingTimeOptions;
     };
 }

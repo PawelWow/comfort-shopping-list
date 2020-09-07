@@ -72,13 +72,13 @@ const EditShoppingListScreen = props => {
         inputValues: {
             [ControlsIds.title]: editedList ? editedList.title : '',
             [ControlsIds.content]: '',
-            [ControlsIds.shoppingDate]: editedList ? editedList.shoppingTimeOptions.shoppingDate : new Date(),
-            [ControlsIds.reminderHours]: editedList ? editedList.shoppingTimeOptions.reminderHours : 0,
-            [ControlsIds.reminderMinutes]: editedList ? editedList.shoppingTimeOptions.reminderMinutes : 0,
+            [ControlsIds.shoppingDate]: editedList ? new Date(editedList.shoppingTimeOptions.shoppingDate) : new Date(),
+            [ControlsIds.reminderHours]: editedList ? editedList.shoppingTimeOptions.reminderHours : '0',
+            [ControlsIds.reminderMinutes]: editedList ? editedList.shoppingTimeOptions.reminderMinutes : '0',
         },
         inputValidities: {
-            [ControlsIds.title]: false,
-            [ControlsIds.content]: false
+            [ControlsIds.title]: !!editedList,
+            [ControlsIds.content]: !!editedList
         },
         switchValues: {
             [ControlsIds.isShoppingScheduled]: editedList ? editedList.shoppingTimeOptions.isShoppingScheduled : false,
@@ -86,12 +86,12 @@ const EditShoppingListScreen = props => {
             [ControlsIds.remindOnTime]: editedList ? editedList.shoppingTimeOptions.remindOnTime : true,
         },
 
-        formIsValid: false
+        formIsValid: !!editedList
     });
 
     useEffect(() => {
         if(error) {
-            Alert.alert('An error occured!', error, [{ text: 'OK' }]);
+            Alert.alert('An error occured!', error, [{ text: 'OK' }]);            
         }
     }, [error]);
 
@@ -105,8 +105,22 @@ const EditShoppingListScreen = props => {
         }
 
         try {
+
             if(editedList) {
-                // TODO edit
+                await dispatch(listActions.editList(
+                    editedList.id,
+                    formState.inputValues.title,
+                    formState.inputValues.content,
+                    editedList.items,
+
+                    editedList.creationDate,
+                    formState.switchValues.isShoppingScheduled,
+                    formState.inputValues.shoppingDate,
+                    formState.switchValues.isReminderSet,
+                    formState.switchValues.remindOnTime,
+                    formState.inputValues.reminderHours,
+                    formState.inputValues.reminderMinutes
+                ));
             }
             else 
             {
@@ -192,6 +206,7 @@ const EditShoppingListScreen = props => {
                         id={ControlsIds.content}
                         label="Content"
                         initialValue=''
+                        initiallyValid={true}
                         keyboardType="default"
                         autoCapitalize="sentences"
                         autoCorrect
@@ -214,11 +229,11 @@ const EditShoppingListScreen = props => {
                         onDataChange={onInputChange}
                         onOptionsChange={onSwitchChange}
                         initialValues={{
-                            shoppingDate: editedList ? editedList.shoppingTimeOptions.shoppingDate : new Date(),
+                            shoppingDate: editedList ? new Date(editedList.shoppingTimeOptions.shoppingDate) : new Date(),
                             isReminderSet: editedList ? editedList.shoppingTimeOptions.isReminderSet : false,
                             remindOnTime: editedList ? editedList.shoppingTimeOptions.remindOnTime : true,
-                            reminderHours: editedList ? editedList.shoppingTimeOptions.reminderHours : '0',
-                            reminderMinutes:  editedList ? editedList.shoppingTimeOptions.reminderMinutes : '0'
+                            reminderHours: editedList ? editedList.shoppingTimeOptions.reminderHours.toString() : '0',
+                            reminderMinutes:  editedList ? editedList.shoppingTimeOptions.reminderMinutes.toString() : '0'
                         }} 
                         editMode={!!editedList}
                         shouldReset={shouldReset}
