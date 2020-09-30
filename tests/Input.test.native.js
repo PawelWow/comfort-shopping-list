@@ -250,6 +250,8 @@ describe('<Input /> validation: combined', () => {
     });  
 });
 
+// TODO reset field
+
 // Helper to find a text in nested children. Simple solution for simple components
 // technically looks for an array (children) containing give text
 const hasAnyChildText = (resultJson, textToFind) => {
