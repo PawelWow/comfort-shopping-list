@@ -128,7 +128,7 @@ describe('<Input /> validation: min (minimum text length)', () => {
         expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeTruthy();
     }); 
     
-    it('Should error dissabear if min is met', () => {
+    it('Should error disappear if min is met', () => {
         let result = render(<Input 
                 min={6}
                 errorMessage={errorMessage}
@@ -139,6 +139,54 @@ describe('<Input /> validation: min (minimum text length)', () => {
         const element = result.getByPlaceholder(placeholder);
 
         fireEvent.changeText(element, '12345');
+        expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeTruthy();
+
+        fireEvent.changeText(element, '123456');
+        expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeFalsy();
+    });
+});
+
+describe('<Input /> validation: max (maximum text length)', () => {
+
+    it('Should not show error if max value is met', () => {
+
+        let result = render(<Input 
+                max={6}
+                placeholder={placeholder}
+                onInputChange={() => { }}
+            />);       
+
+            const element = result.getByPlaceholder(placeholder);
+            fireEvent.changeText(element, '123456')
+
+        expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeFalsy();
+    });
+    
+    it('Should show error if max value is NOT met', () => {
+        let result = render(<Input 
+                max={6}
+                errorMessage={errorMessage}
+                placeholder={placeholder}
+                onInputChange={() => { }}
+            />);       
+
+        const element = result.getByPlaceholder(placeholder);
+        fireEvent.changeText(element, '1234567');
+
+        expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeTruthy();
+    }); 
+    
+    it('Should error disappear if max is met', () => {
+        let result = render(<Input 
+                max={6}
+                errorMessage={errorMessage}
+                placeholder={placeholder}
+                onInputChange={() => { }}
+            />);       
+
+        const element = result.getByPlaceholder(placeholder);
+
+        fireEvent.changeText(element, '1234567');
         expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeTruthy();
 
         fireEvent.changeText(element, '123456');
