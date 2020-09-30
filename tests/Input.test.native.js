@@ -104,6 +104,7 @@ describe('<Input /> validation: min (minimum text length)', () => {
 
         let result = render(<Input 
                 min={6}
+                errorMessage={errorMessage}
                 placeholder={placeholder}
                 onInputChange={() => { }}
             />);       
@@ -152,6 +153,7 @@ describe('<Input /> validation: max (maximum text length)', () => {
 
         let result = render(<Input 
                 max={6}
+                errorMessage={errorMessage}
                 placeholder={placeholder}
                 onInputChange={() => { }}
             />);       
@@ -192,6 +194,60 @@ describe('<Input /> validation: max (maximum text length)', () => {
         fireEvent.changeText(element, '123456');
         expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeFalsy();
     });
+});
+
+describe('<Input /> validation: combined', () => {
+
+    it('Should not show error if all conditions are met', () => {
+
+        let result = render(<Input
+                min={5} 
+                max={6}
+                isRequired
+                errorMessage={errorMessage}
+                placeholder={placeholder}
+                onInputChange={() => { }}
+            />);       
+
+        const element = result.getByPlaceholder(placeholder);
+        fireEvent.changeText(element, '123456')
+
+        expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeFalsy();
+    });  
+    
+    it('Should show error if only min is NOT met', () => {
+
+        let result = render(<Input
+                min={5} 
+                max={6}
+                isRequired
+                errorMessage={errorMessage}
+                placeholder={placeholder}
+                onInputChange={() => { }}
+            />);       
+
+        const element = result.getByPlaceholder(placeholder);
+        fireEvent.changeText(element, '1234');
+
+        expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeTruthy();
+    }); 
+    
+    it('Should show error if only max is NOT met', () => {
+
+        let result = render(<Input
+                min={5} 
+                max={6}
+                isRequired
+                errorMessage={errorMessage}
+                placeholder={placeholder}
+                onInputChange={() => { }}
+            />);       
+
+        const element = result.getByPlaceholder(placeholder);
+        fireEvent.changeText(element, '1234567');
+
+        expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeTruthy();
+    });  
 });
 
 // Helper to find a text in nested children. Simple solution for simple components
