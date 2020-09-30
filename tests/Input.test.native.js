@@ -6,6 +6,10 @@ import { render, fireEvent } from 'react-native-testing-library';
 
 import Input from '../components/Input';
 
+// constant variables commonly used in tests
+const placeholder = 'test_placeholder';
+const errorMessage = 'testerror';
+
 describe('<Input /> instance', () => {   
     const label = "test_label";
 
@@ -23,14 +27,8 @@ describe('<Input /> instance', () => {
         const textInputElements = resultJson.children.filter(f => f.type === 'TextInput');
         expect(textInputElements).toHaveLength(1);
     });
-});
-
-describe('<Input /> validation: isRequired', () => {
-    const placeholder = 'test_placeholder';
-    const errorMessage = 'testerror';
 
     it('Should fire event on changeText', () => {
-
         let inputChanged = false;
         let result = render(<Input placeholder={placeholder} onInputChange={() => { inputChanged = true; }} />);       
 
@@ -39,23 +37,35 @@ describe('<Input /> validation: isRequired', () => {
 
         expect(inputChanged).toBeTruthy();
     });
+});
 
+describe('<Input /> validation: isRequired', () => {  
     it('Should show error if isRequired and user do not touch and leave empty field', () => {
 
-        const result = render(<Input placeholder={placeholder} onInputChange={() => { }} errorMessage={errorMessage} isRequired />);
+        const result = render(<Input
+                placeholder={placeholder}
+                onInputChange={() => { }}
+                errorMessage={errorMessage}
+                isRequired
+            />);
   
         // control: no error message is shown
         expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeFalsy();
 
         const element = result.getByPlaceholder(placeholder);
-        fireEvent(element, 'onBlur');   // user did not touch and leaves
+        fireEvent(element, 'onBlur');   // user leaves without filling the field
 
         expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeTruthy();
     });
 
     it('Should show error when is required and blur with no data entered', () => {
 
-        const result = render(<Input placeholder={placeholder} onInputChange={() => { }} errorMessage={errorMessage} isRequired />);
+        const result = render(<Input
+                placeholder={placeholder}
+                onInputChange={() => { }}
+                errorMessage={errorMessage}
+                isRequired
+            />);
   
         // control: no error message is shown
         expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeFalsy();
@@ -86,6 +96,54 @@ describe('<Input /> validation: isRequired', () => {
         expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeFalsy();
     });
     
+});
+
+describe('<Input /> validation: min (minimum text length)', () => {
+
+    it('Should not show error if min value is met', () => {
+
+        let result = render(<Input 
+                min={6}
+                placeholder={placeholder}
+                onInputChange={() => { }}
+            />);       
+
+            const element = result.getByPlaceholder(placeholder);
+            fireEvent.changeText(element, '123456')
+
+        expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeFalsy();
+    });
+    
+    it('Should show error if min value is NOT met', () => {
+        let result = render(<Input 
+                min={6}
+                errorMessage={errorMessage}
+                placeholder={placeholder}
+                onInputChange={() => { }}
+            />);       
+
+        const element = result.getByPlaceholder(placeholder);
+        fireEvent.changeText(element, '12345');
+
+        expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeTruthy();
+    }); 
+    
+    it('Should error dissabear if min is met', () => {
+        let result = render(<Input 
+                min={6}
+                errorMessage={errorMessage}
+                placeholder={placeholder}
+                onInputChange={() => { }}
+            />);       
+
+        const element = result.getByPlaceholder(placeholder);
+
+        fireEvent.changeText(element, '12345');
+        expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeTruthy();
+
+        fireEvent.changeText(element, '123456');
+        expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeFalsy();
+    });
 });
 
 // Helper to find a text in nested children. Simple solution for simple components
