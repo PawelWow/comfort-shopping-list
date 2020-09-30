@@ -5,10 +5,15 @@ import React from 'react';
 import { render, fireEvent } from 'react-native-testing-library';
 
 import Input from '../components/Input';
+import Colors from '../defs/Colors';
 
 // constant variables commonly used in tests
 const placeholder = 'test_placeholder';
+
+// There was a problem with finding the error message. The error text in the componet is sourrounded by spaces and that's why we should ignore spaces
+// Most of test here have ugly search implementation because of misknowledge of the additional spaces problem
 const errorMessage = 'testerror';
+const errorTestMatch = new RegExp(`\\s*${errorMessage}\\s*`);
 
 describe('<Input /> instance', () => {   
     const label = "test_label";
@@ -50,12 +55,14 @@ describe('<Input /> validation: isRequired', () => {
             />);
   
         // control: no error message is shown
-        expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeFalsy();
+        expect(result.queryByText(errorTestMatch)).toBeFalsy();
 
         const element = result.getByPlaceholder(placeholder);
         fireEvent(element, 'onBlur');   // user leaves without filling the field
 
-        expect(hasAnyChildText(result.toJSON(), errorMessage)).toBeTruthy();
+        const query = result.queryByText(errorTestMatch);
+        expect(query).toBeTruthy();
+        expect(query.props.style.color).toBe(Colors.error);
     });
 
     it('Should show error when is required and blur with no data entered', () => {
