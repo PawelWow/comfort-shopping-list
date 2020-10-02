@@ -86,7 +86,7 @@ const Input = props => {
 
     return(
         <View style={styles.control, {...props.containerStyle} }>        
-            <Text style={styles.label}>{props.label}</Text>
+            { props.label && <Text style={styles.label}>{props.label}</Text>}
             <TextInput
                 {...props}
                 style={styles.input}
