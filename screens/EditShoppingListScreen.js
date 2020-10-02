@@ -206,7 +206,7 @@ const EditShoppingListScreen = props => {
 
                     <Input
                         id={ControlsIds.content}
-                        label="Content"
+                        label={editedList ? "Additional content" : 'Content'}
                         initialValue=''
                         initiallyValid={true}
                         keyboardType="default"
@@ -220,7 +220,7 @@ const EditShoppingListScreen = props => {
 
                     {editedList && (
                         <View style={styles.itemsContainer}>
-                            <Text>Items:</Text>
+                            <Text>Items</Text>
                             { editedList.items.map(item => <EditListItem
                                     key={item.key}
                                     id={item.id}
