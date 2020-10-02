@@ -9,7 +9,8 @@ import {
     StyleSheet,
     Alert,
     ScrollView,
-    KeyboardAvoidingView
+    KeyboardAvoidingView,
+    Text
 } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,6 +22,7 @@ import MenuHeaderButton from '../components/MenuHeaderButton';
 import SaveHeaderButton from '../components/SaveHeaderButton';
 import DateTimeOptions from '../components/DateTimeOptions';
 import Input from '../components/Input';
+import EditListItem from '../components/EditListItem';
 import SwitchOption from '../components/SwitchOption';
 import Platform from '../defs/Platform';
 
@@ -215,6 +217,20 @@ const EditShoppingListScreen = props => {
                         numberOfLines={5}
                         onInputChange={onInputChange}                                             
                     />
+
+                    {editedList && (
+                        <View style={styles.itemsContainer}>
+                            <Text>Items:</Text>
+                            { editedList.items.map(item => <EditListItem
+                                    key={item.key}
+                                    id={item.id}
+                                    value={item.content}
+                                    onChange={() => {}}
+                                /> )
+                            }
+                        </View>
+                    )}                   
+
                                    
                 </View>
                 <SwitchOption
@@ -251,6 +267,9 @@ const styles = StyleSheet.create({
     screen: {
         margin: 20
     },
+    itemsContainer: {
+        marginTop: 20
+    }
 });
 
 export const ScreenOptions = navData => {
