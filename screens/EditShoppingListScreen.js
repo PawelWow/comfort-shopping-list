@@ -222,7 +222,7 @@ const EditShoppingListScreen = props => {
                         <View style={styles.itemsContainer}>
                             <Text>Items</Text>
                             { editedList.items.map(item => <EditListItem
-                                    key={item.key}
+                                    key={item.id}
                                     id={item.id}
                                     value={item.content}
                                     onChange={() => {}}
