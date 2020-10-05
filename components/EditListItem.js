@@ -1,17 +1,24 @@
-import React, { useState} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 import { View, Text, StyleSheet } from 'react-native';
 
 import Input from './Input';
 
 const EditListItem = props => {
-    const [isEditMode, setIsEditMode] = useState(false)
+    const [isEditMode, setIsEditMode] = useState(false);
+    const inputRef = useRef();
 
-    // TODO on input blur should disable edit mode
+    useEffect(() => {
+        if(isEditMode && inputRef){
+            inputRef.current.focus();
+        }
+    }, [isEditMode, inputRef])
+
     return (
         <View>
             { isEditMode ? (
                 <Input
+                    ref={inputRef}
                     id={props.id}
                     initialValue={props.value}
                     initiallyValid
@@ -19,8 +26,9 @@ const EditListItem = props => {
                     autoCapitalize="sentences"
                     autoCorrect
                     shouldReset={false}
-                    onInputChange={props.onChange}                                             
-                />                
+                    onInputChange={props.onChange}    
+                    onInputBlur={() => setIsEditMode(false)}                                         
+                /> 
             ) : (
                 <Text style={styles.listItem} onPress={() => setIsEditMode(true)}>{props.value}</Text>
             )}

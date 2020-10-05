@@ -32,7 +32,7 @@ const inputReducer = (state, action) => {
     }
 };
 
-const Input = props => {
+const Input = React.forwardRef((props, ref) => {
     const [inputState, dispatch] = useReducer(inputReducer, {
         value: props.initialValue ? props.initialValue : '',
         isValid: props.initiallyValid,
@@ -73,6 +73,8 @@ const Input = props => {
     }
     
     const onInputFocusLost = () => {
+        props.onInputBlur && props.onInputBlur();
+        
         dispatch({ type: INPUT_BLUR });
     }   
     
@@ -89,6 +91,7 @@ const Input = props => {
             { props.label && <Text style={styles.label}>{props.label}</Text>}
             <TextInput
                 {...props}
+                ref={ref}
                 style={styles.input}
                 value={inputState.value}
                 onChangeText={onInputTextChange}
@@ -97,7 +100,7 @@ const Input = props => {
             { !inputState.isValid && inputState.isTouched && showErrorMessage() }
         </View>
     );
-};
+});
 
 const styles = StyleSheet.create({
     control: {
