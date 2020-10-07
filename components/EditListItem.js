@@ -7,6 +7,7 @@ import Item from '../models/Item';
 
 const EditListItem = props => {
     const [isEditMode, setIsEditMode] = useState(false);
+    const [itemContent, setItemContent] = useState(props.value);
     const inputRef = useRef();
 
     useEffect(() => {
@@ -16,6 +17,7 @@ const EditListItem = props => {
     }, [isEditMode, inputRef])
 
     const onInputChange = (itemId, itemValue, itemValidity) => {
+        setItemContent(itemValue);
         props.onChange(new Item(itemId, itemValue, props.isDone), itemValidity);
     };    
 
@@ -25,7 +27,7 @@ const EditListItem = props => {
             <Input
                 ref={inputRef}
                 id={props.id}
-                initialValue={props.value}
+                initialValue={itemContent}
                 initiallyValid
                 keyboardType="default"
                 autoCapitalize="sentences"
@@ -39,7 +41,7 @@ const EditListItem = props => {
 
     return <Text style={props.isDone ? { ...styles.listItem, ...styles.listItemDone } : styles.listItem}
                 onPress={() => setIsEditMode(true)}
-            >{props.value}</Text>
+            >{itemContent}</Text>
 };
 
 const styles = StyleSheet.create({
