@@ -81,6 +81,7 @@ export const editList = (
     content,
     existingItems,
     updatedItems,
+    deletedItems,
     creationDateIso,
     isShoppingScheduled,
     shoppingDate,
@@ -117,22 +118,36 @@ export const editList = (
             const items = createItems(content);
             if(items.length > 0){
                 await insertItems(id, items);
+            }    
+            
+            // Check if itemId is marked for deletion
+            const isDeletedItem = (currentId) => {
+                const deletedItem = deletedItems.find(id => id === currentId);
+                if(deletedItem){
+                    return true;
+                } else {
+                    return false;
+                }
             }
 
-            // TODO optimize this, find out one query
             await Promise.all(updatedItems.map(async item => {
+
+                if(isDeletedItem(item.id))
+                {
+                    return;
+                }
+
                 await updateItemContent(item.id, item.content);
                 await updateItemDone(item.id, +item.isDone);
             }));
 
+            // TODO DELETE ITEMS HERE
+
             let itemsReduced = [];             
             existingItems.map(item => {
-                // TODO - return on deleted if( deletedItems.find(id => id === item.id)) return
-                // TODO - updatedItems should be filtered as well.
-                // summary: remove deletedItems from existingItems and updatedItems
-
+                // updated replace existing, deleted ones fall off
                 const existingItem = updatedItems.find(i => i.id === item.id);
-                if(!existingItem){
+                if(!existingItem && !isDeletedItem(item.id)){
                     itemsReduced.push(item);
                 }
             });

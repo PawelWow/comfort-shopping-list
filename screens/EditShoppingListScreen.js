@@ -29,6 +29,7 @@ import Platform from '../defs/Platform';
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 const FORM_SWITCH_UPDATE = 'FORM_SWITCH_UPDATE';
 const FORM_EXISTING_ITEMS_UPDATE = 'FORM_EXISTING_ITEMS_UPDATE';
+const FORM_EXISTING_ITEMS_DELETE = 'FORM_EXISTING_ITEMS_DELETE';
 
 const formReducer = (state, action ) => {
     switch(action.type) {
@@ -54,8 +55,17 @@ const formReducer = (state, action ) => {
                 formIsValid: state.formIsValid,
                 inputValidities: state.inputValidities,
                 inputValues: state.inputValues,
-                inputUpdatedItems: { [ControlsIds.editedItems]: [...filteredItems, action.item]},
+                inputUpdatedItems: { ...state.inputUpdatedItems, [ControlsIds.editedItems]: [...filteredItems, action.item]},
                 switchValues: state.switchValues
+            }
+        case FORM_EXISTING_ITEMS_DELETE: 
+            const deletedItems  = [...state.inputUpdatedItems[ControlsIds.deletedItems], action.itemId];
+            return {
+                formIsValid: state.formIsValid,
+                inputValidities: state.inputValidities,
+                inputValues: state.inputValues,
+                inputUpdatedItems: deletedItems,
+                switchValues: state.switchValues                
             }
         case FORM_SWITCH_UPDATE:
             return {
@@ -92,7 +102,7 @@ const EditShoppingListScreen = props => {
         },
         inputUpdatedItems: {            
             [ControlsIds.editedItems]: editedList ? editedList.items : [], // array of Item()
-            // TODO deleted items - array with ids
+            [ControlsIds.deletedItems]: [], // ids of deleted items
         },
         inputValidities: {
             [ControlsIds.title]: !!editedList,
@@ -131,6 +141,7 @@ const EditShoppingListScreen = props => {
                     formState.inputValues.content,
                     editedList.items,
                     formState.inputUpdatedItems[ControlsIds.editedItems],
+                    formState.inputUpdatedItems[ControlsIds.deletedItems],
                     editedList.creationDate,
                     formState.switchValues.isShoppingScheduled,
                     formState.inputValues.shoppingDate,
@@ -200,6 +211,13 @@ const EditShoppingListScreen = props => {
         [dispatchFormState]
     );
 
+    const onRemoveExistingItem = useCallback(itemId => {
+        dispatchFormState({
+            type: FORM_EXISTING_ITEMS_DELETE,
+            itemId: itemId
+        });
+    }, [dispatchFormState]);
+
     const onSwitchChange = useCallback((switchId, switchValue) => {
         dispatchFormState({
             type: FORM_SWITCH_UPDATE,
@@ -254,6 +272,7 @@ const EditShoppingListScreen = props => {
                                     value={item.content}
                                     isDone={item.isDone}
                                     onChange={onExistingItemsChange}
+                                    onRemove={() => { onRemoveExistingItem(item.id) }}
                                 /> )
                             }
                         </View>

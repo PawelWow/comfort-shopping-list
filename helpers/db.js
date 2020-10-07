@@ -241,7 +241,29 @@ export const deleteItems = listId => {
     });
 
     return promise;     
-}
+};
+
+export const deleteSelectedItems = (listId, itemsIds) => {
+    const promise = new Promise((resolve, reject) => {
+        db.transaction(tx => {
+
+            // TODO Query
+            const deleteItemsQuery = 'TODO';
+            tx.executeSql(
+                deleteItemsQuery, 
+                [listId, ...itemsIds], 
+                (_, result) => {
+                    resolve(result);
+                },
+                (_, err) => {
+                    reject(err);
+                }
+            );
+        });
+    });
+
+    return promise;      
+};
 
 export const fetchLists = () => {
     const promise = new Promise((resolve, reject) => {

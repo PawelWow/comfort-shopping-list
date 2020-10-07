@@ -3,6 +3,7 @@ export default {
     title: 'title',
     content: 'content',
     editedItems: 'editedItems',
+    deletedItems: 'deletedItems',
     isShoppingScheduled: 'isShoppingScheduled',
     shoppingDate: 'shoppingDate',
     isReminderSet: 'isReminderSet',
