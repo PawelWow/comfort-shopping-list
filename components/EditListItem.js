@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import { View, Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
 
 import Input from './Input';
+import Item from '../models/Item';
 
 const EditListItem = props => {
     const [isEditMode, setIsEditMode] = useState(false);
@@ -14,26 +15,31 @@ const EditListItem = props => {
         }
     }, [isEditMode, inputRef])
 
-    return (
-        <View>
-            { isEditMode ? (
-                <Input
-                    ref={inputRef}
-                    id={props.id}
-                    initialValue={props.value}
-                    initiallyValid
-                    keyboardType="default"
-                    autoCapitalize="sentences"
-                    autoCorrect
-                    shouldReset={false}
-                    onInputChange={props.onChange}    
-                    onInputBlur={() => setIsEditMode(false)}                                         
-                /> 
-            ) : (
-                <Text style={styles.listItem} onPress={() => setIsEditMode(true)}>{props.value}</Text>
-            )}
-        </View>
-    );
+    const onInputChange = (itemId, itemValue, itemValidity) => {
+        props.onChange(new Item(itemId, itemValue, props.isDone), itemValidity);
+    };    
+
+    if(isEditMode)
+    {
+        return (
+            <Input
+                ref={inputRef}
+                id={props.id}
+                initialValue={props.value}
+                initiallyValid
+                keyboardType="default"
+                autoCapitalize="sentences"
+                autoCorrect
+                shouldReset={false}
+                onInputChange={onInputChange}    
+                onInputBlur={() => setIsEditMode(false)}                                         
+            /> 
+        );
+    }
+
+    return <Text style={props.isDone ? { ...styles.listItem, ...styles.listItemDone } : styles.listItem}
+                onPress={() => setIsEditMode(true)}
+            >{props.value}</Text>
 };
 
 const styles = StyleSheet.create({
@@ -44,6 +50,9 @@ const styles = StyleSheet.create({
         padding: 5,
         margin: 2
     },
+    listItemDone: {
+        textDecorationLine: 'line-through'
+    },  
 
 });
 

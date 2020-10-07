@@ -28,6 +28,7 @@ import Platform from '../defs/Platform';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 const FORM_SWITCH_UPDATE = 'FORM_SWITCH_UPDATE';
+const FORM_EXISTING_ITEMS_UPDATE = 'FORM_EXISTING_ITEMS_UPDATE';
 
 const formReducer = (state, action ) => {
     switch(action.type) {
@@ -44,13 +45,24 @@ const formReducer = (state, action ) => {
                 formIsValid: updatedFormIsValid,
                 inputValidities: updatedValidities,
                 inputValues: updatedValues,
-                switchValues: state.switchValues,
+                inputUpdatedItems: state.inputUpdatedItems,
+                switchValues: state.switchValues
+            }
+        case FORM_EXISTING_ITEMS_UPDATE: 
+            const filteredItems = state.inputUpdatedItems[ControlsIds.editedItems].filter(item => item.id !== action.item.id);
+            return {
+                formIsValid: state.formIsValid,
+                inputValidities: state.inputValidities,
+                inputValues: state.inputValues,
+                inputUpdatedItems: { [ControlsIds.editedItems]: [...filteredItems, action.item]},
+                switchValues: state.switchValues
             }
         case FORM_SWITCH_UPDATE:
             return {
                 formIsValid: state.formIsValid,
                 inputValidities: state.inputValidities,
                 inputValues: state.inputValues,
+                inputUpdatedItems: state.inputUpdatedItems,
                 switchValues: { ...state.switchValues, [action.switch]: action.value }
             }
         default:
@@ -77,6 +89,10 @@ const EditShoppingListScreen = props => {
             [ControlsIds.shoppingDate]: editedList ? new Date(editedList.shoppingTimeOptions.shoppingDate) : new Date(),
             [ControlsIds.reminderHours]: editedList ? editedList.shoppingTimeOptions.reminderHours : '0',
             [ControlsIds.reminderMinutes]: editedList ? editedList.shoppingTimeOptions.reminderMinutes : '0',
+        },
+        inputUpdatedItems: {            
+            [ControlsIds.editedItems]: editedList ? editedList.items : [], // array of Item()
+            // TODO deleted items - array with ids
         },
         inputValidities: {
             [ControlsIds.title]: !!editedList,
@@ -114,7 +130,7 @@ const EditShoppingListScreen = props => {
                     formState.inputValues.title,
                     formState.inputValues.content,
                     editedList.items,
-
+                    formState.inputUpdatedItems[ControlsIds.editedItems],
                     editedList.creationDate,
                     formState.switchValues.isShoppingScheduled,
                     formState.inputValues.shoppingDate,
@@ -170,7 +186,18 @@ const EditShoppingListScreen = props => {
             });
         },
         [dispatchFormState]
-        
+    );
+
+    // 
+    const onExistingItemsChange = useCallback(
+        (item, itemValidity) => {
+            dispatchFormState({
+                type: FORM_EXISTING_ITEMS_UPDATE,
+                item: item,
+                isValid: itemValidity,
+            });
+        },
+        [dispatchFormState]
     );
 
     const onSwitchChange = useCallback((switchId, switchValue) => {
@@ -225,7 +252,8 @@ const EditShoppingListScreen = props => {
                                     key={item.id}
                                     id={item.id}
                                     value={item.content}
-                                    onChange={() => {}}
+                                    isDone={item.isDone}
+                                    onChange={onExistingItemsChange}
                                 /> )
                             }
                         </View>

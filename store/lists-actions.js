@@ -1,4 +1,13 @@
-import { insertList, fetchLists, fetchItems, deleteList, updateListData, insertItems } from '../helpers/db';
+import {
+    insertList,
+    fetchLists,
+    fetchItems,
+    deleteList,
+    updateListData,
+    updateItemContent,
+    updateItemDone,
+    insertItems
+ } from '../helpers/db';
 
 import shortid from 'shortid';
 
@@ -71,6 +80,7 @@ export const editList = (
     title,
     content,
     existingItems,
+    updatedItems,
     creationDateIso,
     isShoppingScheduled,
     shoppingDate,
@@ -109,14 +119,32 @@ export const editList = (
                 await insertItems(id, items);
             }
 
-            const updatedItems = existingItems.concat(items);
+            // TODO optimize this, find out one query
+            await Promise.all(updatedItems.map(async item => {
+                await updateItemContent(item.id, item.content);
+                await updateItemDone(item.id, +item.isDone);
+            }));
+
+            let itemsReduced = [];             
+            existingItems.map(item => {
+                // TODO - return on deleted if( deletedItems.find(id => id === item.id)) return
+                // TODO - updatedItems should be filtered as well.
+                // summary: remove deletedItems from existingItems and updatedItems
+
+                const existingItem = updatedItems.find(i => i.id === item.id);
+                if(!existingItem){
+                    itemsReduced.push(item);
+                }
+            });
+
+            const itemsResult = [...itemsReduced, ...updatedItems, ...items];
 
 
             dispatch({
                 type: EDIT_LIST,
                 id: id,
                 title: title, 
-                items: updatedItems,               
+                items: itemsResult,               
                 creationDateIso: creationDateIso,
                 isShoppingScheduled: isShoppingScheduled,
                 shoppingDateIso: shoppingDateIso,
