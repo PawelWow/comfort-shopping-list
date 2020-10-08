@@ -10,7 +10,7 @@ import {
     insertItems,    
  } from '../helpers/db';
 
- import { saveDataToLocalStorage, loadLocalStorageData } from '../helpers/localStorage';
+ import { saveDataToLocalStorage, loadLocalStorageData, removeDataFromLocalStorage } from '../helpers/localStorage';
  import CurrentListSettings, {STORAGE_KEY_CURRENT_LIST} from '../models/CurrentListSettings';
 
 import shortid from 'shortid';
@@ -235,7 +235,7 @@ export const loadCurrentList = () => {
     } 
 };
 
-export const disableCurrentList = id => {
+export const setAsNotCurrentList = id => {
     return async dispatch => {
         await removeDataFromLocalStorage(STORAGE_KEY_CURRENT_LIST);
         dispatch({ type: DISABLE_LIST_CURRENT, listId: id});

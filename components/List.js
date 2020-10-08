@@ -1,15 +1,16 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FlatList, View, Text, StyleSheet, Button, Alert } from 'react-native';
 
 import ListItem from './ListItem';
 import { SCREEN_NAME as SCREEN_NAME_EDIT } from '../screens/EditShoppingListScreen';
 import { removeList } from '../store/lists-actions';
 
-import { saveListAsCurrent } from '../store/lists-actions';
+import { saveListAsCurrent, setAsNotCurrentList } from '../store/lists-actions';
 
 const List = props => {
     const [error, setError] = useState();
+    const currentListId = useSelector(state => state.currentShoppingListId);
 
     const dispatch = useDispatch();
 
@@ -35,7 +36,18 @@ const List = props => {
             }
         },
         [dispatch],
-    )
+    );
+
+    const onSetListNotCurrent = useCallback(
+        async listId => {
+            try {
+                await dispatch(setAsNotCurrentList(listId));
+            } catch (err) {
+                setError(err.message);
+            }
+        },
+        [dispatch],
+    );
 
     useEffect(() => {
         if(error) {
@@ -81,9 +93,16 @@ const List = props => {
                     renderItem={ itemData =>  <ListItem content={itemData.item.content} /> }
                 />
             { showShoppingDate(props.data.shoppingTimeOptions) }
-            <View style={styles.buttonsContainer}>
+            {listId === currentListId && <Text>Your current list.</Text>}
+            <View style={styles.buttonsContainer}>                
                 <Button title="Delete" onPress={() => { onDeleteListPress(listId) }} />
-                <Button title="Set as current" onPress={() => { onSetListAsCurrent(listId) }} />
+                { listId === currentListId ? (
+                    <Button color="red" title="Set not current" onPress={() => { onSetListNotCurrent(listId) }} />
+                ) : (
+                    <Button title="Set as current" onPress={() => { onSetListAsCurrent(listId) }} />
+                )}
+
+
                 <Button title="Edit" onPress={() => { onEditListPress(listId) }} />
             </View>
         </View>
