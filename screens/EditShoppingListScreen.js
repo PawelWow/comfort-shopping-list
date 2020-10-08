@@ -111,7 +111,7 @@ const EditShoppingListScreen = props => {
             [ControlsIds.reminderMinutes]: editedList ? editedList.shoppingTimeOptions.reminderMinutes : '0',
         },
         inputUpdatedItems: {            
-            [ControlsIds.editedItems]: editedList ? editedList.items : [], // array of Item()
+            [ControlsIds.editedItems]:  [], // array of Item()
             [ControlsIds.deletedItems]: [], // ids of deleted items
         },
         inputValidities: {

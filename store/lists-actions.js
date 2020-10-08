@@ -6,7 +6,8 @@ import {
     updateListData,
     updateItemContent,
     updateItemDone,
-    insertItems
+    deleteSelectedItems,
+    insertItems,    
  } from '../helpers/db';
 
 import shortid from 'shortid';
@@ -94,13 +95,6 @@ export const editList = (
     return async dispatch => {
  
         try {
-/*
-            TODO:
-            - update danych
-             - zmiany w istniejących itemach,
-             - usunięcie itemów ze stanu i z bazy
-*/
-
             const shoppingDateIso = shoppingDate.toISOString();
 
             await updateListData(
@@ -141,7 +135,10 @@ export const editList = (
                 await updateItemDone(item.id, +item.isDone);
             }));
 
-            // TODO DELETE ITEMS HERE
+            if(deletedItems.length > 0)
+            {
+                await deleteSelectedItems(deletedItems);
+            }
 
             let itemsReduced = [];             
             existingItems.map(item => {
@@ -151,9 +148,8 @@ export const editList = (
                     itemsReduced.push(item);
                 }
             });
-
+            
             const itemsResult = [...itemsReduced, ...updatedItems, ...items];
-
 
             dispatch({
                 type: EDIT_LIST,

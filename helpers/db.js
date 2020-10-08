@@ -243,15 +243,21 @@ export const deleteItems = listId => {
     return promise;     
 };
 
-export const deleteSelectedItems = (listId, itemsIds) => {
+// items ids are unique so list id is not needed
+export const deleteSelectedItems = (itemsIds) => {
+
+    const createDeleteQuery = (itemsCount) => {
+        const placeholders = new Array(itemsCount).fill('id=?').join(' OR ');
+        return `DELETE FROM items WHERE ${placeholders}`;
+    }
+
     const promise = new Promise((resolve, reject) => {
         db.transaction(tx => {
 
-            // TODO Query
-            const deleteItemsQuery = 'TODO';
+            const deleteItemsQuery = createDeleteQuery(itemsIds.length);
             tx.executeSql(
                 deleteItemsQuery, 
-                [listId, ...itemsIds], 
+                [...itemsIds], 
                 (_, result) => {
                     resolve(result);
                 },
