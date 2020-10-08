@@ -227,12 +227,20 @@ export const saveListAsCurrent = id => {
 };
 
 export const loadCurrentList = () => {
-
     return async dispatch => {
-        const loadedSettings = await loadLocalStorageData(STORAGE_KEY_CURRENT_LIST);
-        const { id } = JSON.parse(loadedSettings);
-        dispatch({type: SET_LIST_CURRENT, listId: id});
-    } 
+        try {
+            const loadedSettings = await loadLocalStorageData(STORAGE_KEY_CURRENT_LIST);
+            if(!loadedSettings)
+            {
+                return;
+            }
+            
+            const { id } = JSON.parse(loadedSettings);
+            dispatch({type: SET_LIST_CURRENT, listId: id});
+        } catch (error) {
+            throw(error)
+        }
+    }
 };
 
 export const setAsNotCurrentList = id => {

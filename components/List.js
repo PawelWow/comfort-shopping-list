@@ -4,9 +4,8 @@ import { FlatList, View, Text, StyleSheet, Button, Alert } from 'react-native';
 
 import ListItem from './ListItem';
 import { SCREEN_NAME as SCREEN_NAME_EDIT } from '../screens/EditShoppingListScreen';
-import { removeList } from '../store/lists-actions';
 
-import { saveListAsCurrent, setAsNotCurrentList } from '../store/lists-actions';
+import { saveListAsCurrent, setAsNotCurrentList, removeList } from '../store/lists-actions';
 
 const List = props => {
     const [error, setError] = useState();
