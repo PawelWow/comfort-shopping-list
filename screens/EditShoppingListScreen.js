@@ -30,6 +30,7 @@ const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 const FORM_SWITCH_UPDATE = 'FORM_SWITCH_UPDATE';
 const FORM_EXISTING_ITEMS_UPDATE = 'FORM_EXISTING_ITEMS_UPDATE';
 const FORM_EXISTING_ITEMS_DELETE = 'FORM_EXISTING_ITEMS_DELETE';
+const FORM_DELETED_ITEM_RESTORE = 'FORM_DELETED_ITEM_RESTORE';
 
 const formReducer = (state, action ) => {
     switch(action.type) {
@@ -59,14 +60,23 @@ const formReducer = (state, action ) => {
                 switchValues: state.switchValues
             }
         case FORM_EXISTING_ITEMS_DELETE: 
-            const deletedItems  = [...state.inputUpdatedItems[ControlsIds.deletedItems], action.itemId];
+            const itemsToDelete  = [...state.inputUpdatedItems[ControlsIds.deletedItems], action.itemId];
             return {
                 formIsValid: state.formIsValid,
                 inputValidities: state.inputValidities,
                 inputValues: state.inputValues,
-                inputUpdatedItems: deletedItems,
+                inputUpdatedItems: { ...state.inputUpdatedItems,  [ControlsIds.deletedItems]: itemsToDelete },
                 switchValues: state.switchValues                
             }
+        case FORM_DELETED_ITEM_RESTORE:
+            const deletedItems = state.inputUpdatedItems[ControlsIds.deletedItems].filter(itemId => itemId !== action.itemId);
+            return {
+                formIsValid: state.formIsValid,
+                inputValidities: state.inputValidities,
+                inputValues: state.inputValues,
+                inputUpdatedItems: { ...state.inputUpdatedItems,  [ControlsIds.deletedItems]: deletedItems },
+                switchValues: state.switchValues                
+            }            
         case FORM_SWITCH_UPDATE:
             return {
                 formIsValid: state.formIsValid,
@@ -218,6 +228,13 @@ const EditShoppingListScreen = props => {
         });
     }, [dispatchFormState]);
 
+    const onRestoreDeletedItem = useCallback(itemId => {
+        dispatchFormState({
+            type: FORM_DELETED_ITEM_RESTORE,
+            itemId: itemId
+        });
+    }, [dispatchFormState]);
+
     const onSwitchChange = useCallback((switchId, switchValue) => {
         dispatchFormState({
             type: FORM_SWITCH_UPDATE,
@@ -273,6 +290,7 @@ const EditShoppingListScreen = props => {
                                     isDone={item.isDone}
                                     onChange={onExistingItemsChange}
                                     onRemove={() => { onRemoveExistingItem(item.id) }}
+                                    onRestore={() => { onRestoreDeletedItem(item.id)  }}
                                 /> )
                             }
                         </View>

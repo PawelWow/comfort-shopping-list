@@ -11,18 +11,39 @@ import Platform from '../defs/Platform';
 const EditListItem = props => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [itemContent, setItemContent] = useState(props.value);
+    const [isDeleted, setIsDeleted] = useState(false);
+
     const inputRef = useRef();
 
     useEffect(() => {
         if(isEditMode && inputRef){
             inputRef.current.focus();
         }
-    }, [isEditMode, inputRef])
+    }, [isEditMode, inputRef]);
+
+    const onTextPress = () => {
+        if(isDeleted){
+            // cannot edit deleted items
+            return;
+        }
+
+        setIsEditMode(true);
+    };
 
     const onInputChange = (itemId, itemValue, itemValidity) => {
         setItemContent(itemValue);
         props.onChange(new Item(itemId, itemValue, props.isDone), itemValidity);
-    };    
+    };
+    
+    const onRemove = () => {
+        setIsDeleted(true);
+        props.onRemove();
+    }
+
+    const onRestore = () => {
+        setIsDeleted(false);
+        props.onRestore();
+    }
 
     if(isEditMode)
     {
@@ -35,6 +56,7 @@ const EditListItem = props => {
                 keyboardType="default"
                 autoCapitalize="sentences"
                 autoCorrect
+                editable={!isDeleted}
                 shouldReset={false}
                 onInputChange={onInputChange}    
                 onInputBlur={() => setIsEditMode(false)}                                         
@@ -42,17 +64,50 @@ const EditListItem = props => {
         );
     }
 
+    const  getItemStyle = () => {
+        if(isDeleted){
+            return {...styles.container, ...styles.listItem, ...styles.listItemDeleted};
+        }
+
+        return {...styles.container, ...styles.listItem};
+    }
+
+    // get text style accorrding to input state
+    const getItemTextStyle = () => {
+        if(isDeleted) {
+            return styles.listItemTextDeleted;
+        }
+
+        if(props.isDone) {
+            return styles.listItemTextDone;
+        }
+
+        return {flex: 1};
+    }
+
     return (
         <View style={styles.container}>
-            <Text style={props.isDone ? { ...styles.listItem, ...styles.listItemDone } : styles.listItem}
-                onPress={() => setIsEditMode(true)}
-            >{itemContent}</Text>
-            <Ionicons
-                name={IconsNames.remove}
-                size={23}
-                color={Platform.isAndroid ? 'black' : Colors.primary}
-                onPress={props.onRemove}
-            />
+            <View style={getItemStyle()}>
+                <Text style={getItemTextStyle()} onPress={onTextPress}>{itemContent}</Text>
+                { isDeleted && <Text style={styles.listItemTextDeletedMarkup}>  (deleted)</Text>}
+            </View>
+
+            { isDeleted ? (
+                <Ionicons
+                    name={IconsNames.add}
+                    size={23}
+                    color={Platform.isAndroid ? 'green' : Colors.primary}
+                    onPress={onRestore}
+                />
+            ) : (
+                <Ionicons
+                    name={IconsNames.remove}
+                    size={23}
+                    color={Platform.isAndroid ? 'red' : Colors.accent}
+                    onPress={onRemove}
+                />
+            )}
+
         </View>
 )
 };
@@ -70,12 +125,27 @@ const styles = StyleSheet.create({
         backgroundColor: '#fefee3',
         borderWidth: 1,
         padding: 5,
-        margin: 2,
-        flex: 1,
+        margin: 5,
     },
-    listItemDone: {
+
+    listItemDeleted: {
+        backgroundColor: '#eee',
+    },
+
+    listItemTextDone: {
         textDecorationLine: 'line-through'
     }, 
+    listItemTextDeleted: {
+        textDecorationLine: 'line-through',
+        borderColor: '#ccc',
+        color: 'red',
+        fontStyle: 'italic',
+    },
+    listItemTextDeletedMarkup: {
+        color: 'red',
+        fontStyle: 'italic',        
+        flex: 1
+    }
 });
 
 export default EditListItem;
