@@ -129,6 +129,7 @@ const EditShoppingListScreen = props => {
 
     const listId = props.route.params ? props.route.params.listId : null;
     const editedList = useSelector(state => state.shoppingLists.find(list => list.id === listId));
+    const anyCurrentList = useSelector(state => !!state.currentShoppingListId);
     
     // Czy mamy resetować formularz? 
     const [shouldReset, setShouldReset] = useState(false);
@@ -213,7 +214,14 @@ const EditShoppingListScreen = props => {
 
             
             setShouldReset(true); 
-            props.navigation.goBack(); 
+            if(!editedList && !anyCurrentList)
+            {
+                await dispatch(saveListAsCurrent(listId));
+            }
+
+            props.navigation.goBack();
+            
+            // TODO needed?
             setShouldReset(false);         
             
         } catch (err) {
