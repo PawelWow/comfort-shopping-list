@@ -10,6 +10,9 @@ import {
     insertItems,    
  } from '../helpers/db';
 
+ import { saveDataToLocalStorage, loadLocalStorageData } from '../helpers/localStorage';
+ import CurrentListSettings, {STORAGE_KEY_CURRENT_LIST} from '../models/CurrentListSettings';
+
 import shortid from 'shortid';
 
 import Item from '../models/Item';
@@ -19,6 +22,9 @@ export const ADD_LIST = 'ADD_LIST';
 export const SET_LISTS = 'SET_LISTS';
 export const EDIT_LIST = 'EDIT_LIST';
 export const DELETE_LIST = 'DELETE_LIST';
+export const SET_LIST_CURRENT = 'SET_LIST_CURRENT';
+export const LOAD_LIST_CURRENT = 'LOAD_LIST_CURRENT';
+export const DISABLE_LIST_CURRENT = 'DISABLE_LIST_CURRENT';
 
 // TODO tutaj powinien być obiekt listy dodany, bo za dużo tych parametrów
 export const addList = (
@@ -204,6 +210,38 @@ export const removeList = id => {
     }
 }
 
+export const saveListAsCurrent = id => {
+
+    return async dispatch => {
+        try {
+            await saveDataToLocalStorage(
+                STORAGE_KEY_CURRENT_LIST,
+                JSON.stringify(new CurrentListSettings(id))
+            );
+    
+            dispatch({ type: SET_LIST_CURRENT, listId: id})
+        } catch (error) {
+            throw( error);
+        }
+    };
+};
+
+export const loadCurrentList = () => {
+
+    return async dispatch => {
+        const loadedSettings = await loadLocalStorageData(STORAGE_KEY_CURRENT_LIST);
+        const { id } = JSON.parse(loadedSettings);
+        dispatch({type: SET_LIST_CURRENT, listId: id});
+    } 
+};
+
+export const disableCurrentList = id => {
+    return async dispatch => {
+        await removeDataFromLocalStorage(STORAGE_KEY_CURRENT_LIST);
+        dispatch({ type: DISABLE_LIST_CURRENT, listId: id});
+    }
+}
+
 // tworzy deskryptory itemów pochodzących z pola tekstowego użytkownika
 const createItems = (itemsInput) => {    
 
@@ -221,6 +259,3 @@ const createItems = (itemsInput) => {
         return new Item(id, content, false); 
     });
 }
-
-
-

@@ -1,11 +1,19 @@
-import { ADD_LIST, SET_LISTS, DELETE_LIST, EDIT_LIST } from './lists-actions';
+import {
+    ADD_LIST,
+    SET_LISTS,
+    DELETE_LIST,
+    EDIT_LIST,
+    SET_LIST_CURRENT,
+    DISABLE_LIST_CURRENT
+ } from './lists-actions';
 
 import Item from '../models/Item';
 import ShoppingList from '../models/ShoppingList';
 import ShoppingTimeOptions from '../models/ShoppingTimeOptions';
 
 const initialState = {
-    shoppingLists: []
+    shoppingLists: [],
+    currentShoppingListId: null
 };
 
 export default (state = initialState, action) => {
@@ -28,7 +36,8 @@ export default (state = initialState, action) => {
                     reminderOptions
                 );
             return {
-                shoppingLists: state.shoppingLists.concat(shoppingList)
+                shoppingLists: state.shoppingLists.concat(shoppingList),
+                currentShoppingListId: state.currentShoppingListId
             };
         case SET_LISTS:
 
@@ -57,7 +66,8 @@ export default (state = initialState, action) => {
             });
 
             return {
-                shoppingLists: shoppingLists
+                shoppingLists: shoppingLists,
+                currentShoppingListId: state.currentShoppingListId
             };
         case EDIT_LIST: 
             const updatedReminderOptions = new ShoppingTimeOptions(
@@ -81,14 +91,27 @@ export default (state = initialState, action) => {
             updatedShoppingLists.push(updatedShoppingList);
 
             return {
-                shoppingLists: updatedShoppingLists
+                shoppingLists: updatedShoppingLists,
+                currentShoppingListId: state.currentShoppingListId
             };
         case DELETE_LIST:
             const reducedShoppingLists = state.shoppingLists.filter(list => list.id !== action.deletedListId);
             return {
-                shoppingLists: reducedShoppingLists
+                shoppingLists: reducedShoppingLists,
+                currentShoppingListId: state.currentShoppingList === action.deletedListId ? null : state.currentShoppingListId
             };
 
+        case SET_LIST_CURRENT:
+            return {
+                shoppingLists: state.shoppingLists,
+                currentShoppingListId: action.listId
+            };
+        case DISABLE_LIST_CURRENT:
+
+            return {
+                shoppingLists: state.shoppingLists,
+                currentShoppingListId: null
+            };
         default:
             return state;
     }

@@ -3,8 +3,10 @@ import { useDispatch } from 'react-redux';
 import { FlatList, View, Text, StyleSheet, Button, Alert } from 'react-native';
 
 import ListItem from './ListItem';
-import { SCREEN_NAME } from '../screens/EditShoppingListScreen';
+import { SCREEN_NAME as SCREEN_NAME_EDIT } from '../screens/EditShoppingListScreen';
 import { removeList } from '../store/lists-actions';
+
+import { saveListAsCurrent } from '../store/lists-actions';
 
 const List = props => {
     const [error, setError] = useState();
@@ -21,8 +23,19 @@ const List = props => {
     }, [dispatch]);
 
     const onEditListPress = id => {
-        props.navigation.navigate(SCREEN_NAME, {listId: id});
+        props.navigation.navigate(SCREEN_NAME_EDIT, {listId: id});
     };
+
+    const onSetListAsCurrent = useCallback(
+        async listId => {
+            try {
+                await dispatch(saveListAsCurrent(listId));
+            } catch (err) {
+                setError(err.message);            
+            }
+        },
+        [dispatch],
+    )
 
     useEffect(() => {
         if(error) {
@@ -58,6 +71,7 @@ const List = props => {
         );
     };
 
+    const listId = props.data.id;
     return (
         <View style={styles.list}>
             <Text style={styles.title}>{props.data.title}</Text>
@@ -68,9 +82,9 @@ const List = props => {
                 />
             { showShoppingDate(props.data.shoppingTimeOptions) }
             <View style={styles.buttonsContainer}>
-                <Button title="Delete" onPress={() => { onDeleteListPress(props.data.id) }} />
-                <Button title="Set as current" onPress={() => { }} />
-                <Button title="Edit" onPress={() => { onEditListPress(props.data.id) }} />
+                <Button title="Delete" onPress={() => { onDeleteListPress(listId) }} />
+                <Button title="Set as current" onPress={() => { onSetListAsCurrent(listId) }} />
+                <Button title="Edit" onPress={() => { onEditListPress(listId) }} />
             </View>
         </View>
     );
