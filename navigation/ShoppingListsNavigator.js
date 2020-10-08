@@ -93,7 +93,7 @@ export const MenuNavigator = () => {
                 );
             }}>
             <MenuDrawerNavigator.Screen
-                name="Latest list"
+                name="Current list"
                 component={ShoppingListsNavigator}
                 options={() => createDrawerIcon(IconsNames.paper)} 
                 />

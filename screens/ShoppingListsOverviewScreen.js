@@ -22,7 +22,7 @@ const ShoppingListsOverviewScreen = props => {
                 <FlatList
                     data={shoppingLists}
                     keyExtractor={item => item.id.toString()}
-                    renderItem={list => <List data={list.item} navigation={props.navigation} />   }
+                    renderItem={list => <List data={list.item} navigation={props.navigation} showButtons />   }
                 />  
             );
         }

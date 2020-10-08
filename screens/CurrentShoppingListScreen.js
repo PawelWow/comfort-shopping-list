@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import {View, Text, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadCurrentList, loadLists } from '../store/lists-actions';
+import List from '../components/List';
 
 import MenuHeaderButton from '../components/MenuHeaderButton';
 
@@ -26,7 +27,7 @@ const CurrentShoppingListScreen = () => {
     }
 
     return (
-        <View style={styles.screen}><Text>Current shopping list '{currentList.title}'</Text></View>
+        <View style={styles.screen}><List data={currentList} /></View>
     );
 };
 

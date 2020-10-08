@@ -82,6 +82,21 @@ const List = props => {
         );
     };
 
+    const showButtonSection = useCallback(() => {
+        const listId = props.data.id;
+        return (
+            <View style={styles.buttonsContainer}>                
+                <Button title="Delete" onPress={() => { onDeleteListPress(listId) }} />
+                { listId === currentListId ? (
+                    <Button color="red" title="Set not current" onPress={() => { onSetListNotCurrent(listId) }} />
+                ) : (
+                    <Button title="Set as current" onPress={() => { onSetListAsCurrent(listId) }} />
+                )}
+                <Button title="Edit" onPress={() => { onEditListPress(listId) }} />
+            </View>
+        );
+    }, [currentListId]);
+
     const listId = props.data.id;
     return (
         <View style={styles.list}>
@@ -92,18 +107,8 @@ const List = props => {
                     renderItem={ itemData =>  <ListItem content={itemData.item.content} /> }
                 />
             { showShoppingDate(props.data.shoppingTimeOptions) }
-            {listId === currentListId && <Text>Your current list.</Text>}
-            <View style={styles.buttonsContainer}>                
-                <Button title="Delete" onPress={() => { onDeleteListPress(listId) }} />
-                { listId === currentListId ? (
-                    <Button color="red" title="Set not current" onPress={() => { onSetListNotCurrent(listId) }} />
-                ) : (
-                    <Button title="Set as current" onPress={() => { onSetListAsCurrent(listId) }} />
-                )}
-
-
-                <Button title="Edit" onPress={() => { onEditListPress(listId) }} />
-            </View>
+            {props.showButtons && listId === currentListId && <Text>Your current list.</Text>}
+            {props.showButtons && showButtonSection()}
         </View>
     );
 };
