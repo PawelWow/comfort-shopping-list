@@ -13,13 +13,17 @@ const ListItem = props => {
 
     const panResponder = useRef(
         PanResponder.create({
-            onStartShouldSetPanResponder : () => true,
             onPanResponderGrant: () => {
                 pan.setOffset({
                   x: pan.x._value,
                   y: pan.y._value
                 });
-              },              
+              },
+              
+            onMoveShouldSetPanResponder : (e, gesture) => {
+                // TODO gesture.vx > 0 - ruch tylko w prawo, gesture.vx < 0 - ruch tylko w lewo
+                return true;
+            },
             onPanResponderMove : Animated.event( 
                 [null, { dx : pan.x, dy: 0 }], 
                 { useNativeDriver: false }
@@ -29,6 +33,7 @@ const ListItem = props => {
                 {
                     props.onItemPress();
                 }
+                console.log(pan.x);
                 Animated.spring(pan, { toValue:{x:0,y:0}, useNativeDriver: false } ).start();
             }         
         })
