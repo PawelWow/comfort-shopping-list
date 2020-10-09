@@ -216,7 +216,7 @@ const EditShoppingListScreen = props => {
             setShouldReset(true); 
             if(!editedList && !anyCurrentList)
             {
-                await dispatch(saveListAsCurrent(listId));
+                await dispatch(listActions.saveListAsCurrent(listId));
             }
 
             props.navigation.goBack();
