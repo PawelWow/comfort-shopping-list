@@ -1,8 +1,36 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 
-import { View, Text, StyleSheet } from 'react-native';
+import {
+    Text,
+    StyleSheet,
+    Animated,
+    PanResponder
+ } from 'react-native';
 
 const ListItem = props => {
+    const [isDone, setIsDone] = useState(props.isDone);
+    const pan = useRef(new Animated.ValueXY()).current;
+
+    const panResponder = useRef(
+        PanResponder.create({
+            onStartShouldSetPanResponder : () => true,
+            onPanResponderGrant: () => {
+                pan.setOffset({
+                  x: pan.x._value,
+                  y: pan.y._value
+                });
+              },              
+            onPanResponderMove : Animated.event( 
+                [null, { dx : pan.x, dy: 0 }], 
+                { useNativeDriver: false }
+            ),
+            onPanResponderRelease : (e, gesture) => {
+                Animated.spring(pan, { toValue:{x:0,y:0}, useNativeDriver: false } ).start();
+            }            
+        })
+    ).current;
+
+
     const  getItemStyle = () => {
         if(props.isDeleted){
             return {...styles.container, ...props.style, ...styles.listItemDeleted};
@@ -17,19 +45,19 @@ const ListItem = props => {
             return styles.listItemTextDeleted;
         }
     
-        if(props.isDone) {
+        if(isDone) {
             return styles.listItemTextDone;
         }
     
-        return {flex: 1};
+        return {};
     }
 
 
     return (
-        <View style={getItemStyle()}>
+        <Animated.View {...panResponder.panHandlers} style={[pan.getLayout(), getItemStyle()]}>
             <Text style={getItemTextStyle()} onPress={props.onTextPress}>{props.content}</Text>
             { props.isDeleted && <Text style={styles.listItemTextDeletedMarkup}>  (deleted)</Text>}
-        </View>
+        </Animated.View>
     );
 };
 
