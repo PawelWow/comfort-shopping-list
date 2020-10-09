@@ -8,6 +8,8 @@ import IconsNames from '../defs/IconsNames';
 import Colors from '../defs/Colors';
 import Platform from '../defs/Platform';
 
+import ListItem from './ListItem';
+
 const EditListItem = props => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [itemContent, setItemContent] = useState(props.value);
@@ -64,33 +66,15 @@ const EditListItem = props => {
         );
     }
 
-    const  getItemStyle = () => {
-        if(isDeleted){
-            return {...styles.container, ...styles.listItem, ...styles.listItemDeleted};
-        }
-
-        return {...styles.container, ...styles.listItem};
-    }
-
-    // get text style accorrding to input state
-    const getItemTextStyle = () => {
-        if(isDeleted) {
-            return styles.listItemTextDeleted;
-        }
-
-        if(props.isDone) {
-            return styles.listItemTextDone;
-        }
-
-        return {flex: 1};
-    }
-
     return (
         <View style={styles.container}>
-            <View style={getItemStyle()}>
-                <Text style={getItemTextStyle()} onPress={onTextPress}>{itemContent}</Text>
-                { isDeleted && <Text style={styles.listItemTextDeletedMarkup}>  (deleted)</Text>}
-            </View>
+            <ListItem
+                content={itemContent}
+                style={styles.listItem}
+                isDeleted={isDeleted}
+                isDone={props.isDone}
+                onTextPress={onTextPress}
+            />
 
             { isDeleted ? (
                 <Ionicons
@@ -127,25 +111,6 @@ const styles = StyleSheet.create({
         padding: 5,
         margin: 5,
     },
-
-    listItemDeleted: {
-        backgroundColor: '#eee',
-    },
-
-    listItemTextDone: {
-        textDecorationLine: 'line-through'
-    }, 
-    listItemTextDeleted: {
-        textDecorationLine: 'line-through',
-        borderColor: '#ccc',
-        color: 'red',
-        fontStyle: 'italic',
-    },
-    listItemTextDeletedMarkup: {
-        color: 'red',
-        fontStyle: 'italic',        
-        flex: 1
-    }
 });
 
 export default EditListItem;

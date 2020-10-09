@@ -104,7 +104,7 @@ const List = props => {
             <FlatList 
                     data={props.data.items}
                     keyExtractor={item => item.id.toString()}
-                    renderItem={ itemData =>  <ListItem content={itemData.item.content} /> }
+                    renderItem={ itemData =>  <ListItem content={itemData.item.content} style={styles.listItem} /> }
                 />
             { showShoppingDate(props.data.shoppingTimeOptions) }
             {props.showButtons && listId === currentListId && <Text>Your current list.</Text>}
@@ -139,7 +139,13 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         marginVertical: 15,        
-    }
+    },
+    listItem: {
+        borderBottomColor: '#ccc',
+        borderBottomWidth: 1,
+        paddingVertical: 15,
+        paddingHorizontal: 10,
+    },
 });
 
 export default List;
