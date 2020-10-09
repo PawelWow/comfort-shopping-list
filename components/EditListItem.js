@@ -13,9 +13,13 @@ import ListItem from './ListItem';
 const EditListItem = props => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [itemContent, setItemContent] = useState(props.value);
-    const [isDeleted, setIsDeleted] = useState(false);
 
     const inputRef = useRef();
+
+    const isDeleted = useRef(false);
+    const setIsDeleted = data => {
+        isDeleted.current = data;
+    }
 
     useEffect(() => {
         if(isEditMode && inputRef){
@@ -23,8 +27,8 @@ const EditListItem = props => {
         }
     }, [isEditMode, inputRef]);
 
-    const onTextPress = () => {
-        if(isDeleted){
+    const onItemPress = () => {
+        if(isDeleted.current){
             // cannot edit deleted items
             return;
         }
@@ -58,7 +62,7 @@ const EditListItem = props => {
                 keyboardType="default"
                 autoCapitalize="sentences"
                 autoCorrect
-                editable={!isDeleted}
+                editable={!isDeleted.current}
                 shouldReset={false}
                 onInputChange={onInputChange}    
                 onInputBlur={() => setIsEditMode(false)}                                         
@@ -71,12 +75,12 @@ const EditListItem = props => {
             <ListItem
                 content={itemContent}
                 style={styles.listItem}
-                isDeleted={isDeleted}
+                isDeleted={isDeleted.current}
                 isDone={props.isDone}
-                onTextPress={onTextPress}
+                onItemPress={onItemPress}
             />
 
-            { isDeleted ? (
+            { isDeleted.current ? (
                 <Ionicons
                     name={IconsNames.add}
                     size={23}
