@@ -25,11 +25,19 @@ const ListItem = props => {
                 { useNativeDriver: false }
             ),
             onPanResponderRelease : (e, gesture) => {
+                if(props.onItemPress && itemPressed(gesture))
+                {
+                    props.onItemPress();
+                }
                 Animated.spring(pan, { toValue:{x:0,y:0}, useNativeDriver: false } ).start();
-            }            
+            }         
         })
     ).current;
 
+    // it's pressed if didn't move
+    const itemPressed = gesture => {
+        return gesture.moveY === 0 && gesture.moveX === 0;
+    }
 
     const  getItemStyle = () => {
         if(props.isDeleted){
@@ -55,7 +63,7 @@ const ListItem = props => {
 
     return (
         <Animated.View {...panResponder.panHandlers} style={[pan.getLayout(), getItemStyle()]}>
-            <Text style={getItemTextStyle()} onPress={props.onTextPress}>{props.content}</Text>
+            <Text style={getItemTextStyle()}>{props.content}</Text>
             { props.isDeleted && <Text style={styles.listItemTextDeletedMarkup}>  (deleted)</Text>}
         </Animated.View>
     );
