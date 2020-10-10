@@ -104,7 +104,7 @@ const List = props => {
             <FlatList 
                     data={props.data.items}
                     keyExtractor={item => item.id.toString()}
-                    renderItem={ itemData =>  <ListItem content={itemData.item.content} style={styles.listItem} /> }
+                    renderItem={ itemData =>  <ListItem content={itemData.item.content} isDone={itemData.item.isDone} style={styles.listItem} /> }
                 />
             { showShoppingDate(props.data.shoppingTimeOptions) }
             {props.showButtons && listId === currentListId && <Text>Your current list.</Text>}
@@ -141,6 +141,7 @@ const styles = StyleSheet.create({
         marginVertical: 15,        
     },
     listItem: {
+        backgroundColor: '#fefee3',
         borderBottomColor: '#ccc',
         borderBottomWidth: 1,
         paddingVertical: 15,
