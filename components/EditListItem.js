@@ -13,6 +13,7 @@ import ListItem from './ListItem';
 const EditListItem = props => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [itemContent, setItemContent] = useState(props.value);
+    const [itemDone, setItemDone] = useState(props.isDone);
 
     const inputRef = useRef();
 
@@ -38,8 +39,13 @@ const EditListItem = props => {
 
     const onInputChange = (itemId, itemValue, itemValidity) => {
         setItemContent(itemValue);
-        props.onChange(new Item(itemId, itemValue, props.isDone), itemValidity);
+        props.onChange(new Item(itemId, itemValue, itemDone), itemValidity);
     };
+
+    const onItemDoneChange = (itemId, isDone) => {
+        setItemDone(isDone);
+        props.onChange(new Item(itemId, itemContent, isDone));
+    }
     
     const onRemove = () => {
         setIsDeleted(true);
@@ -73,11 +79,13 @@ const EditListItem = props => {
     return (
         <View style={styles.container}>
             <ListItem
+                id={props.id}
                 content={itemContent}
                 style={styles.listItem}
                 isDeleted={isDeleted.current}
-                isDone={props.isDone}
+                isDone={itemDone}
                 onItemPress={onItemPress}
+                onIsDoneChange={onItemDoneChange}
             />
 
             { isDeleted.current ? (

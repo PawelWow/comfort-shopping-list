@@ -60,6 +60,7 @@ const ListItem = props => {
                 const isMovedEnough = Math.abs(gesture.dx) >= underItemCompWidth.current;
                 if(isMovedEnough){
                     setIsDoneRef(!isDoneRef.current);
+                    props.onIsDoneChange(props.id, !isDone);
                 }
 
                 Animated.spring(pan, { toValue:{x:0,y:0}, useNativeDriver: false } ).start();
