@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 import {
     View,
@@ -9,12 +9,15 @@ import {
  } from 'react-native';
 
 const ListItem = props => {
-    const [isDone, setIsDone] = useState(props.isDone);    
-    const isDoneRef = useRef(isDone);
-    const setIsDoneRef = value => {
-        isDoneRef.current = value;
-        setIsDone(value);
-    }
+    const [isDone, setIsDone] = useState(props.isDone);   
+    
+    // REV
+    useEffect(() => {
+        if(isDone != props.isDone){
+            setIsDone(props.isDone);
+        }
+
+    }, [isDone, props.isDone])
 
     const underItemCompWidth = useRef(0);
     const setUnderItemCompWidth = data => {
@@ -33,7 +36,7 @@ const ListItem = props => {
               },
             onStartShouldSetPanResponder: ( )=> true,
             onMoveShouldSetPanResponder : (e, gesture) => {
-                if(isDoneRef.current) {
+                if(isDone) {
                     return gesture.vx < 0;
                 }
                 return gesture.vx > 0;
@@ -59,8 +62,8 @@ const ListItem = props => {
 
                 const isMovedEnough = Math.abs(gesture.dx) >= underItemCompWidth.current;
                 if(isMovedEnough){
-                    setIsDoneRef(!isDoneRef.current);
-                    props.onIsDoneChange(props.id, !isDone);
+                    setIsDone(state => !state);
+                    props.onIsDoneChange && props.onIsDoneChange(props.id, !isDone);
                 }
 
                 Animated.spring(pan, { toValue:{x:0,y:0}, useNativeDriver: false } ).start();
@@ -121,7 +124,7 @@ const ListItem = props => {
         <View style={{flex: 1}}>
             {getUnderItemElement()}
             <Animated.View {...panResponder.panHandlers} style={[pan.getLayout(), getItemStyle()]}>
-                <Text style={getItemTextStyle()}>{props.content}</Text>
+                <Text style={getItemTextStyle()}>{props.content} {isDone.toString()}</Text>
                 { props.isDeleted && <Text style={styles.listItemTextDeletedMarkup}>  (deleted)</Text>}
             </Animated.View>
         </View>
