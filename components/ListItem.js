@@ -31,6 +31,7 @@ const ListItem = props => {
                   y: pan.y._value
                 });
               },
+            onStartShouldSetPanResponder: ( )=> true,
             onMoveShouldSetPanResponder : (e, gesture) => {
                 if(isDoneRef.current) {
                     return gesture.vx < 0;
