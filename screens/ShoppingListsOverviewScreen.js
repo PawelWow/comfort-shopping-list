@@ -12,7 +12,12 @@ const ShoppingListsOverviewScreen = props => {
     const dispatch = useDispatch();
 
     useEffect(() => {
+        if(shoppingLists.length > 0){
+            return;
+        }
+
         dispatch(listsActions.loadLists());
+            
     }, [dispatch])
 
     const showShoppingListsSection = () => {

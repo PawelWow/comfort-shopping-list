@@ -13,6 +13,10 @@ const CurrentShoppingListScreen = () => {
 
     useEffect(() => {
 
+        if(shoppingLists.length > 0){
+            return;
+        }
+
         dispatch(loadLists());
         dispatch(loadCurrentList());
 
