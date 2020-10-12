@@ -11,15 +11,17 @@ import {
 const ListItem = props => {
  
     const [isDone, setIsDone] = useState(props.isDone);  
-    useEffect(() => {
-        setIsDone(props.isDone);
-    }, [props.isDone])
-
     const isDoneRef = useRef(isDone);
     const setIsDoneRef = done => {
         isDoneRef.current = done;
         setIsDone(done);
-    }
+    };
+
+    useEffect(() => {
+        setIsDoneRef(props.isDone);
+    }, [props.isDone]);
+
+
     
     const underItemCompWidth = useRef(0);
     const setUnderItemCompWidth = data => {
@@ -68,12 +70,12 @@ const ListItem = props => {
                     return;
                 }
 
-                setIsDone(!isDoneRef.current);
+                const newIsDoneValue = !isDoneRef.current;
                 if(props.listId){
-                    props.onIsDoneChange(props.listId, props.id, !isDoneRef.current);
+                    props.onIsDoneChange(props.listId, props.id, newIsDoneValue);
                 }
                 else {
-                    props.onIsDoneChange(props.id, !isDoneRef.current);
+                    props.onIsDoneChange(props.id, newIsDoneValue);
                 }
 
                 setIsDoneRef(!isDoneRef.current)
