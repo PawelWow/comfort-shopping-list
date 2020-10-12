@@ -39,12 +39,12 @@ const EditListItem = props => {
 
     const onInputChange = (itemId, itemValue, itemValidity) => {
         setItemContent(itemValue);
-        props.onChange(new Item(itemId, itemValue, itemDone), itemValidity);
+        props.onChange(new Item(itemId, itemValue, itemDone, props.order), itemValidity);
     };
 
     const onItemDoneChange = (itemId, isDone) => {
         setItemDone(isDone);
-        props.onChange(new Item(itemId, itemContent, isDone));
+        props.onChange(new Item(itemId, itemContent, isDone, props.order));
     }
     
     const onRemove = () => {
@@ -84,6 +84,7 @@ const EditListItem = props => {
                 style={styles.listItem}
                 isDeleted={isDeleted.current}
                 isDone={itemDone}
+                order={props.order}
                 onItemPress={onItemPress}
                 onIsDoneChange={onItemDoneChange}
             />

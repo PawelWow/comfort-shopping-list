@@ -22,7 +22,7 @@ export const init = () => {
 
             // o unikalność ID musimy zadbać sami, w ktracie tworzenia nowego itema przez usera
             query.executeSql(
-                'CREATE TABLE IF NOT EXISTS items (id TEXT PRIMARY KEY NOT NULL, list_id INTEGER NOT NULL, content TEXT NOT NULL, is_done INTEGER NOT NULL DEFAULT 0);',
+                'CREATE TABLE IF NOT EXISTS items (id TEXT PRIMARY KEY NOT NULL, list_id INTEGER NOT NULL, content TEXT NOT NULL, is_done INTEGER NOT NULL DEFAULT 0, order_index INTEGER NOT NULL);',
                 [],
                 () => {
                     resolve()
@@ -147,13 +147,13 @@ export const updateListData = (title, isShoppingScheduled, shoppingDate, isRemin
 
 // isDone should be a number [0,1] - as true or false
 // TODO research: multirows
-export const updateItem = (itemId, newContent, isDone) => {
+export const updateItem = (itemId, newContent, isDone, order) => {
     const promise = new Promise((resolve, reject) => {
         db.transaction(tx => {
 
             tx.executeSql(
-                "UPDATE items SET content=?, is_done=? WHERE id=?;", 
-                [newContent, isDone, itemId], 
+                "UPDATE items SET content=?, is_done=?, order_index=? WHERE id=?;", 
+                [newContent, isDone, order, itemId], 
                 (_, result) => {
                     resolve(result);
                 },
@@ -338,12 +338,12 @@ const buildDeleteItemsQuery = () => {
 // buduje insert query dla wierszy itemów
 // - głównie chodzi o VALUES (id, list_id, content1, is_done), (id, list_id, content2, is_done)
 const buildInsertItemsQuery = itemsCount => {
-    const placeholders = new Array(itemsCount).fill('(?, ?, ?, ?)').join(', ');
-    return `INSERT INTO items (id, list_id, content, is_done) VALUES ${placeholders};`;
+    const placeholders = new Array(itemsCount).fill('(?, ?, ?, ?, ?)').join(', ');
+    return `INSERT INTO items (id, list_id, content, is_done, order_index) VALUES ${placeholders};`;
 }
 
 // buduje tablicę dla wartości w kwerendzie insert
 const prepareInsertItemQueryValues = (listId, items) => {
-    const values = items.map(item => [item.id, listId, item.content, +item.isDone]);
+    const values = items.map(item => [item.id, listId, item.content, +item.isDone, item.order]);
     return values.flat();
 }

@@ -18,6 +18,11 @@ const initialState = {
 };
 
 export default (state = initialState, action) => {
+
+    const sortItems = (itemA, itemB) => {
+        return itemA.order - itemB.order;
+    }
+
     switch(action.type) {
         case ADD_LIST:
             const reminderOptions = new ShoppingTimeOptions(
@@ -32,7 +37,7 @@ export default (state = initialState, action) => {
             const shoppingList = new ShoppingList(
                     action.id,
                     action.title,
-                    action.items,
+                    action.items.sort(sortItems),
                     action.creationDateIso,
                     reminderOptions
                 );
@@ -45,7 +50,7 @@ export default (state = initialState, action) => {
             const shoppingLists = action.listsData.map(list => {
 
                 const dbListItems = action.itemsData.filter(item => item.list_id === list.id);
-                const shoppingListItems = dbListItems.map(i => new Item(i.id, i.content, Boolean(i.is_done)));
+                const shoppingListItems = dbListItems.map(i => new Item(i.id, i.content, Boolean(i.is_done), i.order_index));
 
                 const reminderOptions = new ShoppingTimeOptions(
                     Boolean(list.is_shopping_scheduled),
@@ -59,7 +64,7 @@ export default (state = initialState, action) => {
                 return new ShoppingList(
                     list.id,
                     list.title,
-                    shoppingListItems,
+                    shoppingListItems.sort(sortItems),
                     list.creation_datetime,
                     reminderOptions,                    
                 );
@@ -83,7 +88,7 @@ export default (state = initialState, action) => {
             const updatedShoppingList = new ShoppingList(
                 action.id,
                 action.title,
-                action.items,
+                action.items.sort(sortItems),
                 action.creationDateIso,
                 updatedReminderOptions,                    
             );
@@ -122,7 +127,7 @@ export default (state = initialState, action) => {
             const itemsFiltered = listToUpdate.items.filter(i => i.id !== action.itemId);
             itemsFiltered.push(itemToUpdate);
 
-            listToUpdate.items = itemsFiltered;
+            listToUpdate.items = itemsFiltered.sort(sortItems);
 
             const listCollectionToUpdate = state.shoppingLists.filter(l => l.id !== action.listId);
             listCollectionToUpdate.push(listToUpdate);

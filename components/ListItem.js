@@ -130,7 +130,7 @@ const ListItem = props => {
         return(
             <View style={getItemStyle()}>
                     { isDone && <Ionicons name={IconsNames.done} size={18} style={styles.isDoneIcon} /> }
-                    <Text style={getItemTextStyle()}>{props.content}</Text>
+                    <Text style={getItemTextStyle()}>{props.order +1}. {props.content}</Text>
                     { props.isDeleted && <Text style={styles.listItemTextDeletedMarkup}>  (deleted)</Text>}
             </View>
         );

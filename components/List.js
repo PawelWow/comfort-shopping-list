@@ -120,6 +120,7 @@ const List = props => {
                             id={itemData.item.id}
                             content={itemData.item.content}
                             isDone={itemData.item.isDone}
+                            order={itemData.item.order}
                             onIsDoneChange={onItemDoneSet}
                             style={styles.listItem}
                         /> 

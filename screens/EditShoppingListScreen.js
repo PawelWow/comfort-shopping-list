@@ -330,6 +330,7 @@ const EditShoppingListScreen = props => {
                                     id={item.id}
                                     value={item.content}
                                     isDone={item.isDone}
+                                    order={item.order}
                                     onChange={onExistingItemsChange}
                                     onRemove={() => { onRemoveExistingItem(item.id) }}
                                     onRestore={() => { onRestoreDeletedItem(item.id)  }}

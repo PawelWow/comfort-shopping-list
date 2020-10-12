@@ -116,7 +116,7 @@ export const editList = (
             );
 
             // new Item() dla każdego
-            const items = createItems(content);
+            const items = createItems(content, existingItems.length);
             if(items.length > 0){
                 await insertItems(id, items);
             }    
@@ -135,7 +135,7 @@ export const editList = (
 
                 if(!isDeletedItem(item.id))
                 {
-                    await updateItem(item.id, item.content, item.isDone);
+                    await updateItem(item.id, item.content, item.isDone, item.order);
                 }
 
             }));
@@ -258,7 +258,7 @@ export const setItemDone = (listId, itemId, isDone) => {
 };
 
 // tworzy deskryptory itemów pochodzących z pola tekstowego użytkownika
-const createItems = (itemsInput) => {    
+const createItems = (itemsInput, startIndex = 0) => {    
 
     // TODO przemyśłeć tego regexa. W takiej postaci jest ok, ale moża da sie krócej zapisać, tylko czy czytelniej?
     const separators = new RegExp(
@@ -268,9 +268,13 @@ const createItems = (itemsInput) => {
     // puste itemy nie będą tworzone
     const items = itemsInput.split(separators).filter(element => element.length !== 0);
         
-    return items.map(itemContent => { 
+    const itemsCreated = [];
+    for(itemIndex = 0, order = startIndex; itemIndex < items.length; itemIndex++, order++){
         const id = shortid.generate();
-        const content = itemContent.trim();
-        return new Item(id, content, false); 
-    });
+        const content = items[itemIndex].trim();
+        itemsCreated.push(new Item(id, content, false, order));
+    }
+
+    return itemsCreated; 
+
 }
