@@ -25,6 +25,7 @@ export const DELETE_LIST = 'DELETE_LIST';
 export const SET_LIST_CURRENT = 'SET_LIST_CURRENT';
 export const LOAD_LIST_CURRENT = 'LOAD_LIST_CURRENT';
 export const DISABLE_LIST_CURRENT = 'DISABLE_LIST_CURRENT';
+export const UPDATE_ITEM_DONE = 'UPDATE_ITEM_DONE';
 
 // TODO tutaj powinien być obiekt listy dodany, bo za dużo tych parametrów
 export const addList = (
@@ -249,6 +250,13 @@ export const setAsNotCurrentList = id => {
         dispatch({ type: DISABLE_LIST_CURRENT, listId: id});
     }
 }
+
+export const setItemDone = (listId, itemId, isDone) => {
+    return dispatch => {
+        // TODO to save to dB
+        dispatch({ type: UPDATE_ITEM_DONE, listId: listId, itemId: itemId, isDone: isDone});
+    };
+};
 
 // tworzy deskryptory itemów pochodzących z pola tekstowego użytkownika
 const createItems = (itemsInput) => {    

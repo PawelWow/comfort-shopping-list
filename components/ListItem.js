@@ -9,16 +9,12 @@ import {
  } from 'react-native';
 
 const ListItem = props => {
-    const [isDone, setIsDone] = useState(props.isDone);   
-    
-    // REV
+ 
+    const [isDone, setIsDone] = useState(props.isDone);  
     useEffect(() => {
-        if(isDone != props.isDone){
-            setIsDone(props.isDone);
-        }
-
-    }, [isDone, props.isDone])
-
+        setIsDone(props.isDone);
+    }, [props.isDone])
+    
     const underItemCompWidth = useRef(0);
     const setUnderItemCompWidth = data => {
         underItemCompWidth.current = data;
@@ -36,6 +32,7 @@ const ListItem = props => {
               },
             onStartShouldSetPanResponder: ( )=> true,
             onMoveShouldSetPanResponder : (e, gesture) => {
+
                 if(isDone) {
                     return gesture.vx < 0;
                 }
@@ -61,10 +58,18 @@ const ListItem = props => {
                 }
 
                 const isMovedEnough = Math.abs(gesture.dx) >= underItemCompWidth.current;
-                if(isMovedEnough){
-                    setIsDone(state => !state);
-                    props.onIsDoneChange && props.onIsDoneChange(props.id, !isDone);
+                if(!isMovedEnough){
+                    return;
                 }
+
+                if(props.listId){
+                    props.onIsDoneChange(props.listId, props.id, !isDone);
+                }
+                else {
+                    props.onIsDoneChange(props.id, !isDone);
+                }
+
+                setIsDone(state => !state);
 
                 Animated.spring(pan, { toValue:{x:0,y:0}, useNativeDriver: false } ).start();
             },

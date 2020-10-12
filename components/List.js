@@ -5,7 +5,7 @@ import { FlatList, View, Text, StyleSheet, Button, Alert } from 'react-native';
 import ListItem from './ListItem';
 import { SCREEN_NAME as SCREEN_NAME_EDIT } from '../screens/EditShoppingListScreen';
 
-import { saveListAsCurrent, setAsNotCurrentList, removeList } from '../store/lists-actions';
+import { saveListAsCurrent, setAsNotCurrentList, removeList, setItemDone } from '../store/lists-actions';
 
 const List = props => {
     const [error, setError] = useState();
@@ -47,6 +47,17 @@ const List = props => {
         },
         [dispatch],
     );
+
+    const onItemDoneSet = useCallback(
+        (listId, itemId, isDone) => {
+            try {
+                dispatch(setItemDone(listId, itemId, isDone))
+            } catch (err) {
+                setError(err.message);                
+            }
+        },
+        [dispatch],
+    )
 
     useEffect(() => {
         if(error) {
@@ -104,7 +115,15 @@ const List = props => {
             <FlatList 
                     data={props.data.items}
                     keyExtractor={item => item.id.toString()}
-                    renderItem={ itemData =>  <ListItem content={itemData.item.content} isDone={itemData.item.isDone} style={styles.listItem} /> }
+                    renderItem={itemData => <ListItem
+                            listId={listId}
+                            id={itemData.item.id}
+                            content={itemData.item.content}
+                            isDone={itemData.item.isDone}
+                            onIsDoneChange={onItemDoneSet}
+                            style={styles.listItem}
+                        /> 
+                    }
                 />
             { showShoppingDate(props.data.shoppingTimeOptions) }
             {props.showButtons && listId === currentListId && <Text>Your current list.</Text>}

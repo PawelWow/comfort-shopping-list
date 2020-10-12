@@ -4,7 +4,8 @@ import {
     DELETE_LIST,
     EDIT_LIST,
     SET_LIST_CURRENT,
-    DISABLE_LIST_CURRENT
+    DISABLE_LIST_CURRENT,
+    UPDATE_ITEM_DONE
  } from './lists-actions';
 
 import Item from '../models/Item';
@@ -112,6 +113,26 @@ export default (state = initialState, action) => {
                 shoppingLists: state.shoppingLists,
                 currentShoppingListId: null
             };
+
+        case UPDATE_ITEM_DONE: 
+            const listToUpdate = state.shoppingLists.find(l => l.id === action.listId);
+            const itemToUpdate = listToUpdate.items.find(i => i.id === action.itemId);
+            itemToUpdate.isDone = action.isDone;
+
+            const itemsFiltered = listToUpdate.items.filter(i => i.id !== action.itemId);
+            itemsFiltered.push(itemToUpdate);
+
+            listToUpdate.items = itemsFiltered;
+
+            const listCollectionToUpdate = state.shoppingLists.filter(l => l.id !== action.listId);
+            listCollectionToUpdate.push(listToUpdate);
+
+            return {
+                shoppingLists: listCollectionToUpdate,
+                currentShoppingListId: state.currentShoppingListId
+            }
+
+
         default:
             return state;
     }
