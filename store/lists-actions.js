@@ -4,7 +4,7 @@ import {
     fetchItems,
     deleteList,
     updateListData,
-    updateItemContent,
+    updateItem,
     updateItemDone,
     deleteSelectedItems,
     insertItems,    
@@ -133,14 +133,11 @@ export const editList = (
 
             await Promise.all(updatedItems.map(async item => {
 
-                if(isDeletedItem(item.id))
+                if(!isDeletedItem(item.id))
                 {
-                    return;
+                    await updateItem(item.id, item.content, item.isDone);
                 }
 
-                // TODO this should be one query!
-                await updateItemContent(item.id, item.content);
-                await updateItemDone(item.id, +item.isDone);
             }));
 
             if(deletedItems.length > 0)

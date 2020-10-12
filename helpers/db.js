@@ -145,14 +145,15 @@ export const updateListData = (title, isShoppingScheduled, shoppingDate, isRemin
     return promise;
 }
 
-// Będzie raczej rzadko, ale będzie możliwe
-export const updateItemContent = (itemId, newContent) => {
+// isDone should be a number [0,1] - as true or false
+// TODO research: multirows
+export const updateItem = (itemId, newContent, isDone) => {
     const promise = new Promise((resolve, reject) => {
         db.transaction(tx => {
 
             tx.executeSql(
-                "UPDATE items SET content=? WHERE id=?;", 
-                [newContent, itemId], 
+                "UPDATE items SET content=?, is_done=? WHERE id=?;", 
+                [newContent, isDone, itemId], 
                 (_, result) => {
                     resolve(result);
                 },
