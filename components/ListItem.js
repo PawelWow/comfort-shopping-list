@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect } from 'react';
-
 import {
     View,
     Text,
@@ -7,6 +6,9 @@ import {
     Animated,
     PanResponder
  } from 'react-native';
+ import { Ionicons } from '@expo/vector-icons';
+
+ import IconsNames from '../defs/IconsNames';
 
 const ListItem = props => {
  
@@ -138,6 +140,7 @@ const ListItem = props => {
         <View style={{flex: 1}}>
             {getUnderItemElement()}
             <Animated.View {...panResponder.panHandlers} style={[pan.getLayout(), getItemStyle()]}>
+                { isDone && <Ionicons name={IconsNames.done} size={18} style={styles.isDoneIcon} /> }
                 <Text style={getItemTextStyle()}>{props.content} {isDone.toString()}</Text>
                 { props.isDeleted && <Text style={styles.listItemTextDeletedMarkup}>  (deleted)</Text>}
             </Animated.View>
@@ -149,8 +152,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection:'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        justifyContent: 'flex-start',
+        alignItems: 'baseline',
         
     },
     listItemDeleted: {
@@ -158,7 +161,9 @@ const styles = StyleSheet.create({
     },
 
     listItemTextDone: {
-        textDecorationLine: 'line-through'
+        textDecorationLine: 'line-through',
+        fontStyle: 'italic'
+
     }, 
     listItemTextDeleted: {
         textDecorationLine: 'line-through',
@@ -182,6 +187,9 @@ const styles = StyleSheet.create({
         right: 0,
         backgroundColor: '#F00',
         color: 'white',             
+    },
+    isDoneIcon: {
+        marginRight: 5
     }
 });
 
