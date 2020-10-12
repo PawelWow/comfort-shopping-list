@@ -4,14 +4,15 @@ import {
     Text,
     StyleSheet,
     Animated,
-    PanResponder
+    PanResponder,
+    TouchableOpacity
  } from 'react-native';
+ 
  import { Ionicons } from '@expo/vector-icons';
 
  import IconsNames from '../defs/IconsNames';
 
 const ListItem = props => {
- 
     const [isDone, setIsDone] = useState(props.isDone);  
     const isDoneRef = useRef(isDone);
     const setIsDoneRef = done => {
@@ -40,10 +41,9 @@ const ListItem = props => {
                   y: pan.y._value
                 });
               },
-            onStartShouldSetPanResponder: ( )=> true,
-            onMoveShouldSetPanResponder : (e, gesture) => {
 
-                if(isDone) {
+            onMoveShouldSetPanResponder : (e, gesture) => {
+                if(isDoneRef.current) {
                     return gesture.vx < 0;
                 }
                 return gesture.vx > 0;
@@ -62,11 +62,6 @@ const ListItem = props => {
            
             },
             onPanResponderRelease : (e, gesture) => {
-                if(props.onItemPress && itemPressed(gesture))
-                {
-                    props.onItemPress();
-                }
-
                 const isMovedEnough = Math.abs(gesture.dx) >= underItemCompWidth.current;
                 if(!isMovedEnough){
                     return;
@@ -80,18 +75,13 @@ const ListItem = props => {
                     props.onIsDoneChange(props.id, newIsDoneValue);
                 }
 
-                setIsDoneRef(!isDoneRef.current)
-
                 Animated.spring(pan, { toValue:{x:0,y:0}, useNativeDriver: false } ).start();
+
+                setIsDoneRef(!isDoneRef.current);
             },
      
         })
     ).current;
-
-    // it's pressed if didn't move
-    const itemPressed = gesture => {
-        return gesture.moveY === 0 && gesture.moveX === 0;
-    }
 
     const  getItemStyle = () => {
         if(props.isDeleted){
@@ -136,13 +126,32 @@ const ListItem = props => {
         );
     }
 
+    const getItemContentView = () => {
+        return(
+            <View style={getItemStyle()}>
+                    { isDone && <Ionicons name={IconsNames.done} size={18} style={styles.isDoneIcon} /> }
+                    <Text style={getItemTextStyle()}>{props.content}</Text>
+                    { props.isDeleted && <Text style={styles.listItemTextDeletedMarkup}>  (deleted)</Text>}
+            </View>
+        );
+    }
+
+    if(props.isDeleted){
+        return getItemContentView();
+    }
+
     return (
         <View style={{flex: 1}}>
             {getUnderItemElement()}
-            <Animated.View {...panResponder.panHandlers} style={[pan.getLayout(), getItemStyle()]}>
-                { isDone && <Ionicons name={IconsNames.done} size={18} style={styles.isDoneIcon} /> }
-                <Text style={getItemTextStyle()}>{props.content} {isDone.toString()}</Text>
-                { props.isDeleted && <Text style={styles.listItemTextDeletedMarkup}>  (deleted)</Text>}
+            <Animated.View {...panResponder.panHandlers} style={pan.getLayout()}>
+                { props.onItemPress ? (
+                    <TouchableOpacity onPress={props.onItemPress}>
+                        {getItemContentView()}
+                    </TouchableOpacity>
+                ) : 
+                    getItemContentView()
+                }
+
             </Animated.View>
         </View>
     );
