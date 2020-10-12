@@ -7,20 +7,18 @@ import List from '../components/List';
 import MenuHeaderButton from '../components/MenuHeaderButton';
 
 const CurrentShoppingListScreen = () => {
-    const areListsLoaded = useSelector(state => state.shoppingLists.length > 0 );
-    const currentList = useSelector(state => state.shoppingLists.find(list => list.id === state.currentShoppingListId));
-
+    const currentShoppingListId = useSelector(state => state.currentShoppingListId);
+    const shoppingLists = useSelector(state => state.shoppingLists);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if(!areListsLoaded){
-            dispatch(loadLists());
-        }
 
-        if(!currentList){
-            dispatch(loadCurrentList());
-        }
-    }, [currentList, areListsLoaded, dispatch]);
+        dispatch(loadLists());
+        dispatch(loadCurrentList());
+
+    }, [dispatch]);
+
+    const currentList = shoppingLists.find(list => list.id === currentShoppingListId);
 
     if(!currentList){
         return <View style={styles.screen}><Text>No current list set yet. Go to your lists and set one.</Text></View>

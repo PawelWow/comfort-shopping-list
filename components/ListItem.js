@@ -14,6 +14,12 @@ const ListItem = props => {
     useEffect(() => {
         setIsDone(props.isDone);
     }, [props.isDone])
+
+    const isDoneRef = useRef(isDone);
+    const setIsDoneRef = done => {
+        isDoneRef.current = done;
+        setIsDone(done);
+    }
     
     const underItemCompWidth = useRef(0);
     const setUnderItemCompWidth = data => {
@@ -62,14 +68,15 @@ const ListItem = props => {
                     return;
                 }
 
+                setIsDone(!isDoneRef.current);
                 if(props.listId){
-                    props.onIsDoneChange(props.listId, props.id, !isDone);
+                    props.onIsDoneChange(props.listId, props.id, !isDoneRef.current);
                 }
                 else {
-                    props.onIsDoneChange(props.id, !isDone);
+                    props.onIsDoneChange(props.id, !isDoneRef.current);
                 }
 
-                setIsDone(state => !state);
+                setIsDoneRef(!isDoneRef.current)
 
                 Animated.spring(pan, { toValue:{x:0,y:0}, useNativeDriver: false } ).start();
             },
