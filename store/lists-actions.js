@@ -138,6 +138,7 @@ export const editList = (
                     return;
                 }
 
+                // TODO this should be one query!
                 await updateItemContent(item.id, item.content);
                 await updateItemDone(item.id, +item.isDone);
             }));
@@ -252,8 +253,9 @@ export const setAsNotCurrentList = id => {
 }
 
 export const setItemDone = (listId, itemId, isDone) => {
-    return dispatch => {
-        // TODO to save to dB
+    return async dispatch => {
+
+        await updateItemDone(itemId, isDone);
         dispatch({ type: UPDATE_ITEM_DONE, listId: listId, itemId: itemId, isDone: isDone});
     };
 };
