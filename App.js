@@ -6,9 +6,9 @@ import ReduxThunk from 'redux-thunk';
 import shoppingListsReducer from './store/lists-reducer';
 import AppNavigator from './navigation/AppNavigator';
 
-import { init } from './helpers/db';
+import { initializeDatabase } from './helpers/db/index';
 
-init().then(() => {
+initializeDatabase().then(() => {
   console.log("Database initialized");
 }).catch(err => {
   console.log("Database initialization failed.");

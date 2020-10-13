@@ -1,4 +1,4 @@
-import * as db from '../helpers/db';
+import * as db from '../helpers/db/index';
 
  import { saveDataToLocalStorage, loadLocalStorageData, removeDataFromLocalStorage } from '../helpers/localStorage';
  import CurrentListSettings, {STORAGE_KEY_CURRENT_LIST} from '../models/CurrentListSettings';
@@ -39,7 +39,7 @@ export const addList = (
             const shoppingDateIso = shoppingDate.toISOString();
 
             // O ID listy dba DB, więc tak zostawiamy (nic nie kosztuje, bo po insercie i tak to ID wraca)
-            const insertResult = await db.insertList(
+            const insertResult = await db.addNewList(
                 title,
                 items,
                 creationDateIso,
@@ -131,7 +131,7 @@ export const editList = (
         try {
             const shoppingDateIso = shoppingDate.toISOString();
 
-            await db.updateListData(
+            await db.changeListData(
                 title,
                 +isShoppingScheduled,
                 shoppingDateIso,
@@ -145,11 +145,11 @@ export const editList = (
             // new Item() dla każdego
             const items = createItems(content, existingItems.length);
             if(items.length > 0){
-                await db.insertItems(id, items);
+                await db.addItems(id, items);
             }    
             
             if(updatedItems.length > 0 ){
-                await db.updateItems(updatedItems, id);
+                await db.changeItemsData(updatedItems, id);
             }
 
             const itemsReduced = reduceItems();
@@ -157,10 +157,10 @@ export const editList = (
 
             if(deletedItems.length > 0)
             {
-                await db.deleteSelectedItems(deletedItems);
+                await db.removeItems(deletedItems);
 
                 const itemsUpdatedOrder = updateItemsOrder(itemsResult);
-                await db.updateItemsOrder(id, itemsUpdatedOrder);
+                await db.updateOrderOfItems(id, itemsUpdatedOrder);
 
                 itemsResult = itemsUpdatedOrder;
             }
@@ -209,7 +209,7 @@ export const loadLists = () => {
 export const removeList = id => {
     return async dispatch => {
         try {
-            await db.deleteList(id);
+            await db.removeList(id);
             dispatch({ type: DELETE_LIST, deletedListId: id });
             
         } catch (error) {
@@ -261,7 +261,7 @@ export const setAsNotCurrentList = id => {
 export const setItemDone = (listId, itemId, isDone) => {
     return async dispatch => {
 
-        await db.updateItemDone(itemId, isDone);
+        await db.changeItemDone(itemId, isDone);
         dispatch({ type: UPDATE_ITEM_DONE, listId: listId, itemId: itemId, isDone: isDone});
     };
 };
