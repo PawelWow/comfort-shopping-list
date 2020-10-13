@@ -8,7 +8,7 @@ import {
     UPDATE_ITEM_DONE
  } from './lists-actions';
 
-import Item from '../models/Item';
+import Item, { sortItems } from '../models/Item';
 import ShoppingList from '../models/ShoppingList';
 import ShoppingTimeOptions from '../models/ShoppingTimeOptions';
 
@@ -18,10 +18,6 @@ const initialState = {
 };
 
 export default (state = initialState, action) => {
-
-    const sortItems = (itemA, itemB) => {
-        return itemA.order - itemB.order;
-    }
 
     switch(action.type) {
         case ADD_LIST:

@@ -1,21 +1,11 @@
-import {
-    insertList,
-    fetchLists,
-    fetchItems,
-    deleteList,
-    updateListData,
-    updateItem,
-    updateItemDone,
-    deleteSelectedItems,
-    insertItems,    
- } from '../helpers/db';
+import * as db from '../helpers/db';
 
  import { saveDataToLocalStorage, loadLocalStorageData, removeDataFromLocalStorage } from '../helpers/localStorage';
  import CurrentListSettings, {STORAGE_KEY_CURRENT_LIST} from '../models/CurrentListSettings';
 
 import shortid from 'shortid';
 
-import Item from '../models/Item';
+import Item, { sortItems } from '../models/Item';
 import Separators from '../defs/Separators';
 
 export const ADD_LIST = 'ADD_LIST';
@@ -49,7 +39,7 @@ export const addList = (
             const shoppingDateIso = shoppingDate.toISOString();
 
             // O ID listy dba DB, więc tak zostawiamy (nic nie kosztuje, bo po insercie i tak to ID wraca)
-            const insertResult = await insertList(
+            const insertResult = await db.insertList(
                 title,
                 items,
                 creationDateIso,
@@ -99,12 +89,49 @@ export const editList = (
     reminderMinutes
 ) => {
 
+    /** @description if some items are deleted, ordering might be broken. Function outpus [0, 2, 5] => [0, 1, 2]
+     *  @param {*} items items array
+     */
+    const updateItemsOrder = items => {
+        const updatedItems = items.sort(sortItems);
+        for(i = 0; i < items.length; i++){
+            updatedItems[i].order = i;
+        }
+
+        return updatedItems;
+    };
+
+    /**
+     * @description Check if itemId is marked for deletion
+     * @param {*} currentId id of item to check
+     */
+    const isDeletedItem = (currentId) => {
+        const deletedItem = deletedItems.find(id => id === currentId);
+        return !!deletedItem;
+    };
+
+    /**
+     * @description returns not updated and to deleted items from overall items collection
+     */
+    const reduceItems = () => {
+        const itemsReduced = [];             
+        existingItems.map(item => {
+            // updated replace existing, deleted ones fall off
+            const existingItem = updatedItems.find(i => i.id === item.id);
+            if(!existingItem && !isDeletedItem(item.id)){
+                itemsReduced.push(item);
+            }
+        });   
+        
+        return itemsReduced;
+    };   
+
     return async dispatch => {
  
         try {
             const shoppingDateIso = shoppingDate.toISOString();
 
-            await updateListData(
+            await db.updateListData(
                 title,
                 +isShoppingScheduled,
                 shoppingDateIso,
@@ -118,43 +145,31 @@ export const editList = (
             // new Item() dla każdego
             const items = createItems(content, existingItems.length);
             if(items.length > 0){
-                await insertItems(id, items);
+                await db.insertItems(id, items);
             }    
             
-            // Check if itemId is marked for deletion
-            const isDeletedItem = (currentId) => {
-                const deletedItem = deletedItems.find(id => id === currentId);
-                if(deletedItem){
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-
+            // TODO try bulk
             await Promise.all(updatedItems.map(async item => {
 
                 if(!isDeletedItem(item.id))
                 {
-                    await updateItem(item.id, item.content, item.isDone, item.order);
+                    await db.updateItem(item.id, item.content, item.isDone);
                 }
 
             }));
 
+            const itemsReduced = reduceItems();
+            let itemsResult = [...itemsReduced, ...updatedItems, ...items];
+
             if(deletedItems.length > 0)
             {
-                await deleteSelectedItems(deletedItems);
-            }
+                await db.deleteSelectedItems(deletedItems);
 
-            let itemsReduced = [];             
-            existingItems.map(item => {
-                // updated replace existing, deleted ones fall off
-                const existingItem = updatedItems.find(i => i.id === item.id);
-                if(!existingItem && !isDeletedItem(item.id)){
-                    itemsReduced.push(item);
-                }
-            });
-            
-            const itemsResult = [...itemsReduced, ...updatedItems, ...items];
+                const itemsUpdatedOrder = updateItemsOrder(itemsResult);
+                await db.updateItemsOrder(id, itemsUpdatedOrder);
+
+                itemsResult = itemsUpdatedOrder;
+            }
 
             dispatch({
                 type: EDIT_LIST,
@@ -183,8 +198,8 @@ export const loadLists = () => {
 
         try {
 
-            const listsDbResult = await fetchLists();
-            const itemsDbResult = await fetchItems();
+            const listsDbResult = await db.fetchLists();
+            const itemsDbResult = await db.fetchItems();
 
             dispatch({
                 type: SET_LISTS, listsData: listsDbResult.rows._array, itemsData: itemsDbResult.rows._array
@@ -200,7 +215,7 @@ export const loadLists = () => {
 export const removeList = id => {
     return async dispatch => {
         try {
-            await deleteList(id);
+            await db.deleteList(id);
             dispatch({ type: DELETE_LIST, deletedListId: id });
             
         } catch (error) {
@@ -252,7 +267,7 @@ export const setAsNotCurrentList = id => {
 export const setItemDone = (listId, itemId, isDone) => {
     return async dispatch => {
 
-        await updateItemDone(itemId, isDone);
+        await db.updateItemDone(itemId, isDone);
         dispatch({ type: UPDATE_ITEM_DONE, listId: listId, itemId: itemId, isDone: isDone});
     };
 };
