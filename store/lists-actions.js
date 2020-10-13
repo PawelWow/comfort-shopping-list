@@ -26,7 +26,8 @@ export const addList = (
     isReminderSet,
     remindOnTime,
     reminderHours,
-    reminderMinutes
+    reminderMinutes,
+    isAnyCurrentList
 ) => {
     return async dispatch => {
  
@@ -49,11 +50,13 @@ export const addList = (
                 +remindOnTime,
                 +reminderHours,
                 +reminderMinutes
-            );            
+            );   
+            
+            const listId = insertResult.insertId;
 
             dispatch({
                 type: ADD_LIST,
-                id: insertResult.insertId,
+                id: listId,
                 title: title, 
                 items: items,               
                 creationDateIso: creationDateIso,
@@ -65,6 +68,11 @@ export const addList = (
                 reminderMinutes: reminderMinutes
 
             });
+
+            if (!isAnyCurrentList) {
+                await saveListAsCurrentInStorage(listId);
+                dispatch({ type: SET_LIST_CURRENT, listId: listId});
+            }
             
         } catch (error) {
             throw(error);
@@ -218,16 +226,13 @@ export const removeList = id => {
     }
 }
 
-export const saveListAsCurrent = id => {
+export const saveListAsCurrent = listId => {
 
     return async dispatch => {
         try {
-            await saveDataToLocalStorage(
-                STORAGE_KEY_CURRENT_LIST,
-                JSON.stringify(new CurrentListSettings(id))
-            );
-    
-            dispatch({ type: SET_LIST_CURRENT, listId: id})
+            await saveListAsCurrentInStorage(listId);
+
+            dispatch({ type: SET_LIST_CURRENT, listId: listId})
         } catch (error) {
             throw( error);
         }
@@ -286,4 +291,11 @@ const createItems = (itemsInput, startIndex = 0) => {
 
     return itemsCreated; 
 
-}
+};
+
+const saveListAsCurrentInStorage = async listId => {
+    await saveDataToLocalStorage(
+        STORAGE_KEY_CURRENT_LIST,
+        JSON.stringify(new CurrentListSettings(listId))
+    );
+};

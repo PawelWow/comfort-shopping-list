@@ -207,16 +207,13 @@ const EditShoppingListScreen = props => {
                     formState.switchValues.isReminderSet,
                     formState.switchValues.remindOnTime,
                     formState.inputValues.reminderHours,
-                    formState.inputValues.reminderMinutes
+                    formState.inputValues.reminderMinutes,
+                    anyCurrentList
                 ));  
             }
 
             
             setShouldReset(true); 
-            if(!editedList && !anyCurrentList)
-            {
-                await dispatch(listActions.saveListAsCurrent(listId));
-            }
 
             props.navigation.goBack();
             
