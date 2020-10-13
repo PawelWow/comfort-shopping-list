@@ -169,7 +169,6 @@ const EditShoppingListScreen = props => {
     }, [error]);
 
     // Wykonuje akcję dodawania nowej listy
-    // TODO - na razie tylko wraca do poprzedniej strony
     const onFormSubmit = useCallback(async () => {
 
         if(!formState.formIsValid){

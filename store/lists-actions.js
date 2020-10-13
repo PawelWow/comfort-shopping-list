@@ -148,15 +148,9 @@ export const editList = (
                 await db.insertItems(id, items);
             }    
             
-            // TODO try bulk
-            await Promise.all(updatedItems.map(async item => {
-
-                if(!isDeletedItem(item.id))
-                {
-                    await db.updateItem(item.id, item.content, item.isDone);
-                }
-
-            }));
+            if(updatedItems.length > 0 ){
+                await db.updateItems(updatedItems, id);
+            }
 
             const itemsReduced = reduceItems();
             let itemsResult = [...itemsReduced, ...updatedItems, ...items];

@@ -183,15 +183,16 @@ export const updateListData = (title, isShoppingScheduled, shoppingDate, isRemin
     return promise;
 }
 
-// isDone should be a number [0,1] - as true or false
-// TODO research: multirows: CASE WHEN THEN END WHERE /!\
-export const updateItem = (itemId, newContent, isDone) => {
+export const updateItems = (items, listId) => {
     const promise = new Promise((resolve, reject) => {
         db.transaction(tx => {
 
+            const query = createUpdateItemsQuery(items.length);
+            const values = prepareUpdateItemsQueryValues(items);
+
             tx.executeSql(
-                "UPDATE items SET content=?, is_done=?, WHERE id=?;", 
-                [newContent, isDone, itemId], 
+                query, 
+                [...values, listId], 
                 (_, result) => {
                     resolve(result);
                 },
@@ -415,6 +416,17 @@ const buildInsertItemsOrderQuery = itemsCount => {
 
 const prepareInsertItemsOrderQueryValues = (listId, items) => {
     const values = items.map(item => [item.id, listId, item.order]);
+    return values.flat();
+}
+
+//UPDATE items SET content=?, is_done=?, WHERE id=?;",
+const createUpdateItemsQuery = itemsCount => {
+    const placeholders = new Array(itemsCount).fill('WHEN id=? THEN ?').join(' ');
+    return `UPDATE items SET content=CASE ${placeholders} ELSE content END, is_done=CASE ${placeholders} ELSE is_done END WHERE list_id=?;`;
+}
+
+const prepareUpdateItemsQueryValues = items => {
+    const values = items.map(item => [item.id, item.content, item.id, +item.isDone]);
     return values.flat();
 }
 
