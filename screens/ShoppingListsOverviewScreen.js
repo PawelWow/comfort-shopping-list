@@ -3,7 +3,7 @@ import  { useSelector, useDispatch } from 'react-redux';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 
 import * as listsActions from '../store/lists-actions';
-import MenuHeaderButton from '../components/MenuHeaderButton';
+import MenuHeaderButton from '../components/UI/Buttons/MenuHeaderButton';
 import List from '../components/List';
 
 const ShoppingListsOverviewScreen = props => {

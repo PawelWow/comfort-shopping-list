@@ -4,7 +4,7 @@
 import React from 'react';
 import { render, fireEvent } from 'react-native-testing-library';
 
-import EditListItem from '../components/EditListItem';
+import EditListItem from '../components/Items/EditListItem';
 
 describe('<EditListItem />', () => {  
     const value = "test_value";

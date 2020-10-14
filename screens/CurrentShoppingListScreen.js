@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loadCurrentList, loadLists } from '../store/lists-actions';
 import List from '../components/List';
 
-import MenuHeaderButton from '../components/MenuHeaderButton';
+import MenuHeaderButton from '../components/UI/Buttons/MenuHeaderButton';
 
 const CurrentShoppingListScreen = () => {
     const currentShoppingListId = useSelector(state => state.currentShoppingListId);

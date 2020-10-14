@@ -4,7 +4,7 @@
 import React from 'react';
 import { render, fireEvent } from 'react-native-testing-library';
 
-import Input from '../components/Input';
+import Input from '../components/UI/Input';
 import Colors from '../defs/Colors';
 
 // constant variables commonly used in tests

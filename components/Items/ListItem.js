@@ -10,7 +10,7 @@ import {
  
  import { Ionicons } from '@expo/vector-icons';
 
- import IconsNames from '../defs/IconsNames';
+ import IconsNames from '../../defs/IconsNames';
 
 const ListItem = props => {
     const [isDone, setIsDone] = useState(props.isDone);  

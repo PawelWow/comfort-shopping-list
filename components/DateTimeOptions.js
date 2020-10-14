@@ -2,8 +2,8 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import Input from './Input';
-import SwitchOption from './SwitchOption';
+import Input from './UI/Input';
+import SwitchOption from './UI/SwitchOption';
 
 import ControlsIds from '../defs/ControlsIds';
 

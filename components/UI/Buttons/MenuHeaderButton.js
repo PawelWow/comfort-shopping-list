@@ -2,7 +2,7 @@ import React from 'react';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
 import HeaderButton from './HeaderButton';
-import IconsNames from '../defs/IconsNames';
+import IconsNames from '../../../defs/IconsNames';
 
 const MenuHeaderButton = props => {
     return(
