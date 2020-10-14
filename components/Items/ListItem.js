@@ -12,6 +12,8 @@ import {
 
  import IconsNames from '../../defs/IconsNames';
 
+ import ListItemView from './ListItemView';
+
 const ListItem = props => {
     const [isDone, setIsDone] = useState(props.isDone);  
     const isDoneRef = useRef(isDone);
@@ -126,20 +128,16 @@ const ListItem = props => {
         );
     }
 
-    const getItemContentView = () => {
-        return(
-            <View style={getItemStyle()}>
-                    { isDone && <Ionicons name={IconsNames.done} size={18} style={styles.isDoneIcon} /> }
-                    <Text style={getItemTextStyle()}>{props.order +1}. {props.content}</Text>
-                    { props.isDeleted && <Text style={styles.listItemTextDeletedMarkup}>  (deleted)</Text>}
-            </View>
-        );
-    }
-
     if(props.isDeleted){
         return ( 
             <TouchableOpacity onLongPress={props.onItemLongPress}>
-                {getItemContentView()}
+                <ListItemView
+                    content={props.content}
+                    order={props.order}
+                    isDone={isDone}
+                    style={props.style}
+                    isDeleted={props.isDeleted}
+                />
             </TouchableOpacity>
         );
     }
@@ -150,10 +148,16 @@ const ListItem = props => {
             <Animated.View {...panResponder.panHandlers} style={pan.getLayout()}>
                 { props.onItemPress ? (
                     <TouchableOpacity onPress={props.onItemPress} onLongPress={props.onItemLongPress}>
-                        {getItemContentView()}
+                        <ListItemView
+                            content={props.content}
+                            order={props.order}
+                            isDone={isDone}
+                            style={props.style}
+                            isDeleted={false}
+                        />
                     </TouchableOpacity>
                 ) : 
-                    getItemContentView()
+                    <ListItemView content={props.content} order={props.order} isDone={isDone} style={props.style} isDeleted={false} />
                 }
 
             </Animated.View>
