@@ -22,7 +22,7 @@ import MenuHeaderButton from '../components/UI/Buttons/MenuHeaderButton';
 import SaveHeaderButton from '../components/UI/Buttons/SaveHeaderButton';
 import DateTimeOptions from '../components/DateTimeOptions';
 import Input from '../components/UI/Input';
-import EditListItem from '../components/Items/EditListItem';
+import ItemsEditor from '../components/Items/Lists/ItemsEditor';
 import SwitchOption from '../components/UI/SwitchOption';
 import Platform from '../defs/Platform';
 
@@ -319,20 +319,12 @@ const EditShoppingListScreen = props => {
                     />
 
                     {editedList && (
-                        <View style={styles.itemsContainer}>
-                            <Text>Items</Text>
-                            { editedList.items.map(item => <EditListItem
-                                    key={item.id}
-                                    id={item.id}
-                                    value={item.content}
-                                    isDone={item.isDone}
-                                    order={item.order}
-                                    onChange={onExistingItemsChange}
-                                    onRemove={() => { onRemoveExistingItem(item.id) }}
-                                    onRestore={() => { onRestoreDeletedItem(item.id)  }}
-                                /> )
-                            }
-                        </View>
+                        <ItemsEditor
+                            items={editedList.items}
+                            onChange={onExistingItemsChange}
+                            onRemove={onRemoveExistingItem}
+                            onRestore={onRestoreDeletedItem}
+                        />
                     )}                   
 
                                    
@@ -370,9 +362,6 @@ const EditShoppingListScreen = props => {
 const styles = StyleSheet.create({
     screen: {
         margin: 20
-    },
-    itemsContainer: {
-        marginTop: 20
     }
 });
 
