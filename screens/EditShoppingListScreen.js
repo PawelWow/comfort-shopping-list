@@ -23,6 +23,7 @@ import SaveHeaderButton from '../components/UI/Buttons/SaveHeaderButton';
 import DateTimeOptions from '../components/DateTimeOptions';
 import Input from '../components/UI/Input';
 import ItemsEditor from '../components/Items/Lists/ItemsEditor';
+import ItemsOrderEditor from '../components/Items/Lists/ItemsOrderEditor';
 import SwitchOption from '../components/UI/SwitchOption';
 import Platform from '../defs/Platform';
 
@@ -126,6 +127,7 @@ const formReducer = (state, action ) => {
 
 const EditShoppingListScreen = props => {
     const [error, setError] = useState();
+    const [changeItemsOrderMode, setChangeItemsOrderMode] = useState(false);
 
     const listId = props.route.params ? props.route.params.listId : null;
     const editedList = useSelector(state => state.shoppingLists.find(list => list.id === listId));
@@ -281,6 +283,20 @@ const EditShoppingListScreen = props => {
         });
     }, [dispatchFormState]);
 
+    const getItemsView = (items) => {
+        if(changeItemsOrderMode){
+            return <ItemsOrderEditor items={items} onButtonDonePress={ () => setChangeItemsOrderMode(false) } />
+        }
+
+        return <ItemsEditor
+                    items={items}
+                    onChange={onExistingItemsChange}
+                    onItemRemove={onRemoveExistingItem}
+                    onItemRestore={onRestoreDeletedItem}
+                    onItemLongPress={ () => setChangeItemsOrderMode(true) }
+                />
+        };
+
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -318,14 +334,7 @@ const EditShoppingListScreen = props => {
                         onInputChange={onInputChange}                                             
                     />
 
-                    {editedList && (
-                        <ItemsEditor
-                            items={editedList.items}
-                            onChange={onExistingItemsChange}
-                            onRemove={onRemoveExistingItem}
-                            onRestore={onRestoreDeletedItem}
-                        />
-                    )}                   
+                    {editedList && getItemsView(editedList.items) }                   
 
                                    
                 </View>

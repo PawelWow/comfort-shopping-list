@@ -137,7 +137,11 @@ const ListItem = props => {
     }
 
     if(props.isDeleted){
-        return getItemContentView();
+        return ( 
+            <TouchableOpacity onLongPress={props.onItemLongPress}>
+                {getItemContentView()}
+            </TouchableOpacity>
+        );
     }
 
     return (
@@ -145,7 +149,7 @@ const ListItem = props => {
             {getUnderItemElement()}
             <Animated.View {...panResponder.panHandlers} style={pan.getLayout()}>
                 { props.onItemPress ? (
-                    <TouchableOpacity onPress={props.onItemPress}>
+                    <TouchableOpacity onPress={props.onItemPress} onLongPress={props.onItemLongPress}>
                         {getItemContentView()}
                     </TouchableOpacity>
                 ) : 

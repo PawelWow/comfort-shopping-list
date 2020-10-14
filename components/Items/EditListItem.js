@@ -86,6 +86,7 @@ const EditListItem = props => {
                 isDone={itemDone}
                 order={props.order}
                 onItemPress={onItemPress}
+                onItemLongPress={props.onItemLongPress}
                 onIsDoneChange={onItemDoneChange}
             />
 
