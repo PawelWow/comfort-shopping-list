@@ -153,11 +153,10 @@ const ListItem = props => {
                             order={props.order}
                             isDone={isDone}
                             style={props.style}
-                            isDeleted={false}
                         />
                     </TouchableOpacity>
                 ) : 
-                    <ListItemView content={props.content} order={props.order} isDone={isDone} style={props.style} isDeleted={false} />
+                    <ListItemView content={props.content} order={props.order} isDone={isDone} style={props.style} />
                 }
 
             </Animated.View>
