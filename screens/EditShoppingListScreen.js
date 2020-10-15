@@ -287,10 +287,11 @@ const EditShoppingListScreen = props => {
         
         if(changeItemsOrderMode){
             return <ItemsOrderEditor
-                    items={items}
-                    deletedItems={formState.inputUpdatedItems[ControlsIds.deletedItems]}
-                    onButtonDonePress={() => setChangeItemsOrderMode(false)}
-                />
+                        items={items}
+                        deletedItems={formState.inputUpdatedItems[ControlsIds.deletedItems]}
+                        onChangeOrder={() => {/* TODO change order */}}
+                        onButtonDonePress={() => setChangeItemsOrderMode(false)}
+                    />
         }
 
         return <ItemsEditor
