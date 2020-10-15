@@ -17,7 +17,7 @@ const EditListItem = props => {
 
     const inputRef = useRef();
 
-    const isDeleted = useRef(false);
+    const isDeleted = useRef(props.isDeleted);
     const setIsDeleted = data => {
         isDeleted.current = data;
     }

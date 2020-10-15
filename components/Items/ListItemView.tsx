@@ -11,7 +11,7 @@ import IconsNames from '../../defs/IconsNames';
 interface IProps {
     content: string;
     isDone: boolean;
-    isDeleted: boolean;
+    isDeleted?: boolean;
     order: number;
     // TODO temp /!\
     style: {};

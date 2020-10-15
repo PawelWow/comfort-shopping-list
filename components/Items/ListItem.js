@@ -8,10 +8,6 @@ import {
     TouchableOpacity
  } from 'react-native';
  
- import { Ionicons } from '@expo/vector-icons';
-
- import IconsNames from '../../defs/IconsNames';
-
  import ListItemView from './ListItemView';
 
 const ListItem = props => {
@@ -130,15 +126,17 @@ const ListItem = props => {
 
     if(props.isDeleted){
         return ( 
-            <TouchableOpacity onLongPress={props.onItemLongPress}>
-                <ListItemView
-                    content={props.content}
-                    order={props.order}
-                    isDone={isDone}
-                    style={props.style}
-                    isDeleted={props.isDeleted}
-                />
-            </TouchableOpacity>
+            <View style={{flex: 1}}>
+                <TouchableOpacity onLongPress={props.onItemLongPress}>
+                    <ListItemView
+                        content={props.content}
+                        order={props.order}
+                        isDone={isDone}
+                        style={props.style}
+                        isDeleted={props.isDeleted}
+                    />
+                </TouchableOpacity>
+            </View>
         );
     }
 

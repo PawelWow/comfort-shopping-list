@@ -284,12 +284,18 @@ const EditShoppingListScreen = props => {
     }, [dispatchFormState]);
 
     const getItemsView = (items) => {
+        
         if(changeItemsOrderMode){
-            return <ItemsOrderEditor items={items} onButtonDonePress={ () => setChangeItemsOrderMode(false) } />
+            return <ItemsOrderEditor
+                    items={items}
+                    deletedItems={formState.inputUpdatedItems[ControlsIds.deletedItems]}
+                    onButtonDonePress={() => setChangeItemsOrderMode(false)}
+                />
         }
 
         return <ItemsEditor
                     items={items}
+                    deletedItems={formState.inputUpdatedItems[ControlsIds.deletedItems]}                    
                     onChange={onExistingItemsChange}
                     onItemRemove={onRemoveExistingItem}
                     onItemRestore={onRestoreDeletedItem}

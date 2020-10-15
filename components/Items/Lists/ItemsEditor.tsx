@@ -10,13 +10,14 @@ import EditListItem from '../EditListItem';
 
 interface IProps {
     items: Item[];
+    deletedItems: string[];
     onChange: (item: Item, itemValidity: boolean) => void;
     onItemRemove: (itemId: string) => void;
     onItemRestore: (itemId: string) => void;
     onItemLongPress: () => void;
 }
 
-const ItemsEditor: React.FC<IProps> = ({items, onChange, onItemRemove, onItemRestore, onItemLongPress}) => {
+const ItemsEditor: React.FC<IProps> = ({items, deletedItems, onChange, onItemRemove, onItemRestore, onItemLongPress}) => {
 
     return (
         <View style={styles.itemsContainer}>
@@ -27,6 +28,7 @@ const ItemsEditor: React.FC<IProps> = ({items, onChange, onItemRemove, onItemRes
                     value={item.content}
                     isDone={item.isDone}
                     order={item.order}
+                    isDeleted={!!deletedItems.find(id => id === item.id)}
                     onChange={onChange}
                     onRemove={() => onItemRemove(item.id)}
                     onRestore={() => onItemRestore(item.id)}

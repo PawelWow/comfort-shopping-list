@@ -2,7 +2,12 @@
  * Model of a list item
  */
 class Item {
-    constructor(id, content, isDone, order){
+    id: string;
+    content: string;
+    isDone: boolean;
+    order: number;
+    
+    constructor(id: string, content: string, isDone: boolean, order: number){
         this.id = id;
         this.content = content;
         this.isDone = isDone;
