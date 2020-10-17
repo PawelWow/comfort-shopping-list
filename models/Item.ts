@@ -22,6 +22,6 @@ export default Item;
  * @param {*} itemA - order property of item
  * @param {*} itemB - order property of item to compare
  */
-export const sortItems = (itemA, itemB) => {
+export const sortItems = (itemA: Item, itemB: Item) => {
     return itemA.order - itemB.order;
 }

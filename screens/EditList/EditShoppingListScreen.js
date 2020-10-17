@@ -10,22 +10,21 @@ import {
     Alert,
     ScrollView,
     KeyboardAvoidingView,
-    Text
 } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import ControlsIds from '../defs/ControlsIds';
-import * as listActions from '../store/lists-actions';
+import ControlsIds from '../../defs/ControlsIds';
+import * as listActions from '../../store/lists-actions';
 
-import MenuHeaderButton from '../components/UI/Buttons/MenuHeaderButton';
-import SaveHeaderButton from '../components/UI/Buttons/SaveHeaderButton';
-import DateTimeOptions from '../components/DateTimeOptions';
-import Input from '../components/UI/Input';
-import ItemsEditor from '../components/Items/Lists/ItemsEditor';
-import ItemsOrderEditor from '../components/Items/Lists/ItemsOrderEditor';
-import SwitchOption from '../components/UI/SwitchOption';
-import Platform from '../defs/Platform';
+import MenuHeaderButton from '../../components/UI/Buttons/MenuHeaderButton';
+import SaveHeaderButton from '../../components/UI/Buttons/SaveHeaderButton';
+import DateTimeOptions from '../../components/DateTimeOptions';
+import Input from '../../components/UI/Input';
+import ItemsEditor from '../../components/Items/Lists/ItemsEditor';
+import ItemsOrderEditor from '../../components/Items/Lists/ItemsOrderEditor';
+import SwitchOption from '../../components/UI/SwitchOption';
+import Platform from '../../defs/Platform';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 const FORM_SWITCH_UPDATE = 'FORM_SWITCH_UPDATE';

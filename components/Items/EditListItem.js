@@ -14,6 +14,7 @@ const EditListItem = props => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [itemContent, setItemContent] = useState(props.value);
     const [itemDone, setItemDone] = useState(props.isDone);
+    const [isValid, setIsValid] = useState(true);
 
     const inputRef = useRef();
 
@@ -39,12 +40,27 @@ const EditListItem = props => {
 
     const onInputChange = (itemId, itemValue, itemValidity) => {
         setItemContent(itemValue);
-        props.onChange(new Item(itemId, itemValue, itemDone, props.order), itemValidity);
+        setIsValid(itemValidity);
+        if(itemValidity){
+            props.onChange(new Item(itemId, itemValue, itemDone, props.order), itemValidity);
+        }        
     };
 
     const onItemDoneChange = (itemId, isDone) => {
         setItemDone(isDone);
-        props.onChange(new Item(itemId, itemContent, isDone, props.order));
+        if(isValid) {
+            props.onChange(new Item(itemId, itemContent, isDone, props.order));
+        }
+    };
+
+    const onBlur = () => {
+        if(!isValid){
+            // TODO ERROR
+            console.log('item is not valid...');
+            return;
+        }
+
+        setIsEditMode(false);
     }
     
     const onRemove = () => {
@@ -71,7 +87,7 @@ const EditListItem = props => {
                 editable={!isDeleted.current}
                 shouldReset={false}
                 onInputChange={onInputChange}    
-                onInputBlur={() => setIsEditMode(false)}                                         
+                onInputBlur={onBlur}                                         
             /> 
         );
     }

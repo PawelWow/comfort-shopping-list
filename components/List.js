@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FlatList, View, Text, StyleSheet, Button, Alert } from 'react-native';
 
 import ListItem from './Items/ListItem';
-import { SCREEN_NAME as SCREEN_NAME_EDIT } from '../screens/EditShoppingListScreen';
+import { SCREEN_NAME as SCREEN_NAME_EDIT } from '../screens/EditList/EditShoppingListScreen';
 
 import { saveListAsCurrent, setAsNotCurrentList, removeList, setItemDone } from '../store/lists-actions';
 

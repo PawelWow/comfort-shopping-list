@@ -10,26 +10,12 @@ import CurrentShoppingListScreen, {ScreenOptions as currentShoppingListScreenOpt
 import EditShoppingListScreen, {
     ScreenOptions as editShoppingListScreenOptions,
     SCREEN_NAME as EDIT_SCREEN_NAME, 
-} from '../screens/EditShoppingListScreen';
+} from '../screens/EditList/EditShoppingListScreen';
 import ShoppingListsOverviewScreen, {ScreenOptions as shoppingListOverviewScreenOptions} from '../screens/ShoppingListsOverviewScreen';
 
+import EditShoppingListNavigator from './EditListNavigator';
+
 import IconsNames from '../defs/IconsNames';
-
-const EditShoppingListStackNavigator = createStackNavigator();
-
-export const EditShoppingListNavigator = () => {
-    return(
-        <EditShoppingListStackNavigator.Navigator>
-            <EditShoppingListStackNavigator.Screen
-                name={EDIT_SCREEN_NAME}
-                component={EditShoppingListScreen}
-                options={editShoppingListScreenOptions}
-            />
-        </EditShoppingListStackNavigator.Navigator>
-    );
-}
-
-const ShoppingListsStackNavigator = createStackNavigator();
 
 export const ShoppingListsNavigator = () => {
     return (
