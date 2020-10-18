@@ -10,6 +10,7 @@ import {
     Alert,
     ScrollView,
     KeyboardAvoidingView,
+    Button,
 } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,6 +26,8 @@ import ItemsEditor from '../../components/Items/Lists/ItemsEditor';
 import ItemsOrderEditor from '../../components/Items/Lists/ItemsOrderEditor';
 import SwitchOption from '../../components/UI/SwitchOption';
 import Platform from '../../defs/Platform';
+
+import {SCREEN_NAME as SCREEN_NAME_EDIT_ITEMS} from './EditListItemsScreen';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 const FORM_SWITCH_UPDATE = 'FORM_SWITCH_UPDATE';
@@ -339,6 +342,12 @@ const EditShoppingListScreen = props => {
                         numberOfLines={5}
                         onInputChange={onInputChange}                                             
                     />
+
+                    {editedList && editedList.items.length > 0 && (
+                        <Button title="Manage existing items" onPress={() => {
+                            props.navigation.navigate(SCREEN_NAME_EDIT_ITEMS, {listId: editedList.id, existingItems: editedList.items});
+                        }} />
+                    )}
 
                     {editedList && getItemsView(editedList.items) }                   
 

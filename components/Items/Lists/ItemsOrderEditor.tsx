@@ -22,7 +22,6 @@ interface IProps {
 const ItemsOrderEditor: React.FC<IProps> = ({items, deletedItems, onChangeOrder, onButtonDonePress}) => {
 
     const renderItem: React.FC<RenderItemParams<Item>> = ({ item, drag, isActive }) => {
-        //const { item, drag, isActive } = data;
 
         return (
             <TouchableOpacity
@@ -44,16 +43,13 @@ const ItemsOrderEditor: React.FC<IProps> = ({items, deletedItems, onChangeOrder,
       };
       // TODO out of scroll view /!\
     return (
-        <View style={{marginTop: 20}}>
-            <Text>Change items order</Text>
-            <DraggableFlatList
-                data={items}
-                renderItem={renderItem}
-                keyExtractor={(item, index) => item.id}
-                onDragEnd={({ data }) => onChangeOrder(data)}
-            />
-            <Button title="Done" onPress={onButtonDonePress} />
-        </View>
+        <DraggableFlatList
+        data={items}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => item.id}
+        onDragEnd={({ data }) => onChangeOrder(data)}
+        scrollEnabled
+    />
     );
 };
 
@@ -70,6 +66,10 @@ const styles = StyleSheet.create({
         padding: 5,
         marginHorizontal: 5,
         marginVertical: 10,
+    },
+    itemsContainer: {
+        marginTop: 20,
+        flex: 1
     },
 });
 

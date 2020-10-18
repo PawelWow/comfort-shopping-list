@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import {
     ScrollView,
     KeyboardAvoidingView,
-    Text
+    Text,
+    StyleSheet, 
+    View
 } from 'react-native';
 
 import Platform from '../../defs/Platform';
@@ -11,14 +13,24 @@ import Item, {sortItems} from '../../models/Item';
 import ItemsEditor from '../../components/Items/Lists/ItemsEditor';
 import ItemsOrderEditor from '../../components/Items/Lists/ItemsOrderEditor';
 
-interface IProps {
+interface IParams {
     listId: number;
     existingItems: Item[];
 }
 
-const EditListItemsScreen: React.FC<IProps> = ({listId, existingItems}) => {
+interface IRoute {
+    params: IParams;
+}
+
+interface IProps  {
+    route: IRoute;
+}
+
+const EditListItemsScreen: React.FC<IProps> = ({route}) => {
+    const {listId, existingItems} = route.params;
+    
     const [isChangeOrderMode, setIsChangeOrderMode] = useState(false);
-    const [editedItems, setEditedItems] = useState<Item[]>([]);    
+    const [editedItems, setEditedItems] = useState<Item[]>(existingItems);    
     const [deletedItems, setDeletedItems] = useState<string[]>([]);
 
     // cached edited items
@@ -71,17 +83,21 @@ const EditListItemsScreen: React.FC<IProps> = ({listId, existingItems}) => {
 
     return (
         <KeyboardAvoidingView
-            style={{ flex: 1 }}
+            style={styles.screen}
             behavior={Platform.isAndroid ? 'height' : 'padding'}
             keyboardVerticalOffset={30}
         >
-            {isChangeOrderMode ? (
-                <ItemsOrderEditor
-                    items={editedItems}
-                    deletedItems={deletedItems}
-                    onChangeOrder={() => {/* TODO change order */}}
-                    onButtonDonePress={() => setIsChangeOrderMode(false)}
-                />
+            {isChangeOrderMode ? ( 
+                <View style={{height: '100%'}}>
+                    <Text>Change items order</Text>
+                    <ItemsOrderEditor
+                        items={editedItems}
+                        deletedItems={deletedItems}
+                        onChangeOrder={() => {/* TODO change order */}}
+                        onButtonDonePress={() => setIsChangeOrderMode(false)}
+                    />
+                </View> 
+
             ) : (
                 <ScrollView>
                     <ItemsEditor
@@ -98,6 +114,12 @@ const EditListItemsScreen: React.FC<IProps> = ({listId, existingItems}) => {
         </KeyboardAvoidingView>
     );
 };
+
+const styles = StyleSheet.create({
+    screen: {
+        margin: 20
+    }
+});
 
 export const ScreenOptions = () => {
     return {
