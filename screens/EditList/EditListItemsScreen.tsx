@@ -37,7 +37,7 @@ const EditListItemsScreen: React.FC<IProps> = ({route, navigation}) => {
     const {existingItems, goBackScreenName} = route.params;
     const [isChangeOrderMode, setIsChangeOrderMode] = useState(false);
 
-    const [items, setItems] = useState(existingItems);
+    const [itemsPreview, setItemsPreview] = useState(existingItems);
     const [editedItems, setEditedItems] = useState<Item[]>([]);    
     const [deletedItems, setDeletedItems] = useState<string[]>([]);
 
@@ -59,16 +59,16 @@ const EditListItemsScreen: React.FC<IProps> = ({route, navigation}) => {
 
     const onExistingItemsChange = (item: Item) =>
     {
-        updatedEditedItems(item);
+        updateEditedItems(item);
 
         const updatedCache = [...cachedItems];
         updatedCache.push(item);
         setCachedItems(updatedCache);
 
-        const updatedItems = items.filter(i => i.id !== item.id);
-        updatedItems.push(item);
-        updatedItems.sort(sortItems);
-        setItems(updatedItems);
+        const preview = itemsPreview.filter(i => i.id !== item.id);
+        preview.push(item);
+        preview.sort(sortItems);
+        setItemsPreview(preview);
     }
 
     const onRemoveExistingItem = (itemId: string) => {       
@@ -80,37 +80,27 @@ const EditListItemsScreen: React.FC<IProps> = ({route, navigation}) => {
 
         const filteredItems = editedItems.filter(filterItem);
         setEditedItems(filteredItems);    
-        
-        const updatedItems = items.filter(filterItem);
-        setItems(updatedItems);        
     }
 
     const onRestoreDeletedItem = (itemId: string) => {
 
         const cachedItem = cachedItems.find(item => item.id === itemId);
         if(cachedItem) {
-            updatedEditedItems(cachedItem);
+            updateEditedItems(cachedItem);
             const filteredCache = cachedItems.filter(item => item.id !== itemId);
             setCachedItems(filteredCache);
 
-            const updatedItems = [...items];
+            const updatedItems = [...itemsPreview];
             updatedItems.push(cachedItem);
             updatedItems.sort(sortItems);
-            setItems(updatedItems);
+            setItemsPreview(updatedItems);
         }
 
         const filteredDeletedItems = deletedItems.filter(id => id !== itemId);
         setDeletedItems(filteredDeletedItems);
-
-        const missingItem = existingItems.find(item => item.id === itemId);
-
-        const updatedItems = [...items];
-        updatedItems.push(missingItem!);
-        updatedItems.sort(sortItems);
-        setItems(updatedItems);
     };
 
-    const updatedEditedItems = (item: Item) => {
+    const updateEditedItems = (item: Item) => {
         const updatedItems = editedItems.filter(i => i.id !== item.id);
         updatedItems.push(item);
         updatedItems.sort(sortItems); 
@@ -128,7 +118,7 @@ const EditListItemsScreen: React.FC<IProps> = ({route, navigation}) => {
                 <View style={{height: '100%'}}>
                     <Text>Change items order</Text>
                     <ItemsOrderEditor
-                        items={items}
+                        items={itemsPreview}
                         deletedItems={deletedItems}
                         onChangeOrder={() => {/* TODO change order */}}
                         onButtonDonePress={() => setIsChangeOrderMode(false)}
@@ -138,7 +128,7 @@ const EditListItemsScreen: React.FC<IProps> = ({route, navigation}) => {
             ) : (
                 <ScrollView>
                     <ItemsEditor
-                        items={items}
+                        items={itemsPreview}
                         deletedItems={deletedItems}                    
                         onChange={onExistingItemsChange}
                         onItemRemove={onRemoveExistingItem}
