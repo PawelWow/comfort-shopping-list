@@ -54,7 +54,7 @@ const editListReducer = (state, action ) => {
                 formIsValid: state.formIsValid,
                 inputValidities: state.inputValidities,
                 inputValues: state.inputValues,
-                inputUpdatedItem: {
+                inputUpdatedItems: {
                     ...state.inputUpdatedItems,
                     [ControlsIds.editedItems]: action[ControlsIds.editedItems],
                     [ControlsIds.deletedItems]: action[ControlsIds.deletedItems]
@@ -199,15 +199,12 @@ const EditShoppingListScreen = props => {
 
     React.useEffect(() => {
         if (props.route.params?.itemsEdition) {
-            console.log('goo');
-            console.log('edited');
-            console.log(itemsEdition.editedItems);
-            console.log('deleted');
-            console.log(itemsEdition.deletedItems);
+            const { editedItems, deletedItems } = props.route.params.itemsEdition;
+
             dispatchListState({
                 type: EXISTING_ITEMS_CHANGE,
-                [ControlsIds.editedItems]: itemsEdition.editedItems,
-                [ControlsIds.deletedItems]: itemsEdition.deletedItems
+                [ControlsIds.editedItems]: editedItems,
+                [ControlsIds.deletedItems]: deletedItems
              });
          }
       }, [props.route.params?.itemsEdition, dispatchListState]);    
