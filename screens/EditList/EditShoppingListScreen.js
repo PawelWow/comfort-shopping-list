@@ -22,8 +22,6 @@ import MenuHeaderButton from '../../components/UI/Buttons/MenuHeaderButton';
 import SaveHeaderButton from '../../components/UI/Buttons/SaveHeaderButton';
 import DateTimeOptions from '../../components/DateTimeOptions';
 import Input from '../../components/UI/Input';
-import ItemsEditor from '../../components/Items/Lists/ItemsEditor';
-import ItemsOrderEditor from '../../components/Items/Lists/ItemsOrderEditor';
 import SwitchOption from '../../components/UI/SwitchOption';
 import Platform from '../../defs/Platform';
 
@@ -31,14 +29,9 @@ import {SCREEN_NAME as SCREEN_NAME_EDIT_ITEMS} from './EditListItemsScreen';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 const FORM_SWITCH_UPDATE = 'FORM_SWITCH_UPDATE';
-const FORM_EXISTING_ITEMS_UPDATE = 'FORM_EXISTING_ITEMS_UPDATE';
-const FORM_EXISTING_ITEMS_DELETE = 'FORM_EXISTING_ITEMS_DELETE';
-const FORM_DELETED_ITEM_RESTORE = 'FORM_DELETED_ITEM_RESTORE';
+const EXISTING_ITEMS_CHANGE = 'EXISTING_ITEMS_CHANGE';
 
-// cached because we can delete edited items and restore them
-const EDITED_ITEMS_CACHE = 'editedItemsCache';
-
-const formReducer = (state, action ) => {
+const editListReducer = (state, action ) => {
     switch(action.type) {
         case FORM_INPUT_UPDATE:
             const updatedValues = { ...state.inputValues, [action.input]: action.value };
@@ -56,63 +49,18 @@ const formReducer = (state, action ) => {
                 inputUpdatedItems: state.inputUpdatedItems,
                 switchValues: state.switchValues
             }
-        case FORM_EXISTING_ITEMS_UPDATE: 
-            const filteredItems = state.inputUpdatedItems[ControlsIds.editedItems].filter(item => item.id !== action.item.id);
-            const filteredCachedItems = state.inputUpdatedItems[EDITED_ITEMS_CACHE].filter(item => item.id !== action.item.id);
-
+        case EXISTING_ITEMS_CHANGE:
             return {
                 formIsValid: state.formIsValid,
                 inputValidities: state.inputValidities,
                 inputValues: state.inputValues,
-                inputUpdatedItems: {
+                inputUpdatedItem: {
                     ...state.inputUpdatedItems,
-                    [EDITED_ITEMS_CACHE]: [...filteredCachedItems, action.item],
-                    [ControlsIds.editedItems]: [...filteredItems, action.item]
+                    [ControlsIds.editedItems]: action[ControlsIds.editedItems],
+                    [ControlsIds.deletedItems]: action[ControlsIds.deletedItems]
                 },
                 switchValues: state.switchValues
-            }
-        case FORM_EXISTING_ITEMS_DELETE: 
-            const itemsToDelete  = [...state.inputUpdatedItems[ControlsIds.deletedItems], action.itemId];
-            const itemsToUpdate = state.inputUpdatedItems[ControlsIds.editedItems].filter(item => item.id !== action.itemId);
-            return {
-                formIsValid: state.formIsValid,
-                inputValidities: state.inputValidities,
-                inputValues: state.inputValues,
-                inputUpdatedItems: {
-                    ...state.inputUpdatedItems,
-                    [ControlsIds.editedItems]: itemsToUpdate,
-                    [ControlsIds.deletedItems]: itemsToDelete
-                },
-                switchValues: state.switchValues                
-            }
-        case FORM_DELETED_ITEM_RESTORE:
-            const deletedItems = state.inputUpdatedItems[ControlsIds.deletedItems].filter(itemId => itemId !== action.itemId);
-            const removedEditedItem = state.inputUpdatedItems[EDITED_ITEMS_CACHE].find(item => item.id === action.itemId);
-            const editedItemsCache = state.inputUpdatedItems[EDITED_ITEMS_CACHE].filter(itemId => itemId !== action.itemId);
-
-            let updatedItemsState;
-            if(removedEditedItem){
-                const updatedItems = [...state.inputUpdatedItems[ControlsIds.editedItems], removedEditedItem];
-                updatedItemsState =  {
-                    ...state.inputUpdatedItems, 
-                    [ControlsIds.editedItems]: updatedItems,
-                    [EDITED_ITEMS_CACHE]: editedItemsCache,
-                    [ControlsIds.deletedItems]: deletedItems,
-                }
-            }else {
-                updatedItemsState = {
-                    ...state.inputUpdatedItems,
-                    [ControlsIds.deletedItems]: deletedItems
-                }
-            }
-
-            return {
-                formIsValid: state.formIsValid,
-                inputValidities: state.inputValidities,
-                inputValues: state.inputValues,
-                inputUpdatedItems: updatedItemsState,
-                switchValues: state.switchValues                
-            }            
+            }         
         case FORM_SWITCH_UPDATE:
             return {
                 formIsValid: state.formIsValid,
@@ -129,7 +77,6 @@ const formReducer = (state, action ) => {
 
 const EditShoppingListScreen = props => {
     const [error, setError] = useState();
-    const [changeItemsOrderMode, setChangeItemsOrderMode] = useState(false);
 
     const listId = props.route.params ? props.route.params.listId : null;
     const editedList = useSelector(state => state.shoppingLists.find(list => list.id === listId));
@@ -140,7 +87,7 @@ const EditShoppingListScreen = props => {
 
     const dispatch = useDispatch();
 
-    const [formState, dispatchFormState] = useReducer(formReducer, {
+    const [listState, dispatchListState] = useReducer(editListReducer, {
         inputValues: {
             [ControlsIds.title]: editedList ? editedList.title : '',
             [ControlsIds.content]: '',
@@ -150,7 +97,6 @@ const EditShoppingListScreen = props => {
         },
         inputUpdatedItems: {            
             [ControlsIds.editedItems]:  [], // array of Item()
-            [EDITED_ITEMS_CACHE]: [], // array of Item()
             [ControlsIds.deletedItems]: [], // ids of deleted items
         },
         inputValidities: {
@@ -175,7 +121,7 @@ const EditShoppingListScreen = props => {
     // Wykonuje akcję dodawania nowej listy
     const onFormSubmit = useCallback(async () => {
 
-        if(!formState.formIsValid){
+        if(!listState.formIsValid){
             Alert.alert('Wrong data', 'Check the error in the form.', [ {text: 'OK '}]);
             return;
         }
@@ -185,33 +131,33 @@ const EditShoppingListScreen = props => {
             if(editedList) {
                 await dispatch(listActions.editList(
                     editedList.id,
-                    formState.inputValues.title,
-                    formState.inputValues.content,
+                    listState.inputValues.title,
+                    listState.inputValues.content,
                     editedList.items,
-                    formState.inputUpdatedItems[ControlsIds.editedItems],
-                    formState.inputUpdatedItems[ControlsIds.deletedItems],
+                    listState.inputUpdatedItems[ControlsIds.editedItems],
+                    listState.inputUpdatedItems[ControlsIds.deletedItems],
                     editedList.creationDate,
-                    formState.switchValues.isShoppingScheduled,
-                    formState.inputValues.shoppingDate,
-                    formState.switchValues.isReminderSet,
-                    formState.switchValues.remindOnTime,
-                    formState.inputValues.reminderHours,
-                    formState.inputValues.reminderMinutes
+                    listState.switchValues.isShoppingScheduled,
+                    listState.inputValues.shoppingDate,
+                    listState.switchValues.isReminderSet,
+                    listState.switchValues.remindOnTime,
+                    listState.inputValues.reminderHours,
+                    listState.inputValues.reminderMinutes
                 ));
             }
             else 
             {
                 // add new one
                 await dispatch(listActions.addList(            
-                    formState.inputValues.title,
-                    formState.inputValues.content,
+                    listState.inputValues.title,
+                    listState.inputValues.content,
        
-                    formState.switchValues.isShoppingScheduled,
-                    formState.inputValues.shoppingDate,
-                    formState.switchValues.isReminderSet,
-                    formState.switchValues.remindOnTime,
-                    formState.inputValues.reminderHours,
-                    formState.inputValues.reminderMinutes,
+                    listState.switchValues.isShoppingScheduled,
+                    listState.inputValues.shoppingDate,
+                    listState.switchValues.isReminderSet,
+                    listState.switchValues.remindOnTime,
+                    listState.inputValues.reminderHours,
+                    listState.inputValues.reminderMinutes,
                     anyCurrentList
                 ));  
             }
@@ -229,7 +175,7 @@ const EditShoppingListScreen = props => {
         }
 
 
-    }, [dispatch, formState]);
+    }, [dispatch, listState]);
 
     // Przycisk zapisywania po prawej w headerze
     useEffect(() => {
@@ -241,70 +187,38 @@ const EditShoppingListScreen = props => {
     const onInputChange = useCallback(
         (inputIdentifier, inputValue, inputValidity) => {
             
-            dispatchFormState({
+            dispatchListState({
                 type: FORM_INPUT_UPDATE,
                 value: inputValue,
                 isValid: inputValidity,
                 input: inputIdentifier
             });
         },
-        [dispatchFormState]
+        [dispatchListState]
     );
 
-    // 
-    const onExistingItemsChange = useCallback(
-        (item, itemValidity) => {
-            dispatchFormState({
-                type: FORM_EXISTING_ITEMS_UPDATE,
-                item: item,
-                isValid: itemValidity,
-            });
-        },
-        [dispatchFormState]
-    );
-
-    const onRemoveExistingItem = useCallback(itemId => {
-        dispatchFormState({
-            type: FORM_EXISTING_ITEMS_DELETE,
-            itemId: itemId
-        });
-    }, [dispatchFormState]);
-
-    const onRestoreDeletedItem = useCallback(itemId => {
-        dispatchFormState({
-            type: FORM_DELETED_ITEM_RESTORE,
-            itemId: itemId
-        });
-    }, [dispatchFormState]);
+    React.useEffect(() => {
+        if (props.route.params?.itemsEdition) {
+            console.log('goo');
+            console.log('edited');
+            console.log(itemsEdition.editedItems);
+            console.log('deleted');
+            console.log(itemsEdition.deletedItems);
+            dispatchListState({
+                type: EXISTING_ITEMS_CHANGE,
+                [ControlsIds.editedItems]: itemsEdition.editedItems,
+                [ControlsIds.deletedItems]: itemsEdition.deletedItems
+             });
+         }
+      }, [props.route.params?.itemsEdition, dispatchListState]);    
 
     const onSwitchChange = useCallback((switchId, switchValue) => {
-        dispatchFormState({
+        dispatchListState({
             type: FORM_SWITCH_UPDATE,
             value: switchValue,
             switch: switchId
         });
-    }, [dispatchFormState]);
-
-    const getItemsView = (items) => {
-        
-        if(changeItemsOrderMode){
-            return <ItemsOrderEditor
-                        items={items}
-                        deletedItems={formState.inputUpdatedItems[ControlsIds.deletedItems]}
-                        onChangeOrder={() => {/* TODO change order */}}
-                        onButtonDonePress={() => setChangeItemsOrderMode(false)}
-                    />
-        }
-
-        return <ItemsEditor
-                    items={items}
-                    deletedItems={formState.inputUpdatedItems[ControlsIds.deletedItems]}                    
-                    onChange={onExistingItemsChange}
-                    onItemRemove={onRemoveExistingItem}
-                    onItemRestore={onRestoreDeletedItem}
-                    onItemLongPress={ () => setChangeItemsOrderMode(true) }
-                />
-        };
+    }, [dispatchListState]);
 
     return (
         <KeyboardAvoidingView
@@ -345,11 +259,12 @@ const EditShoppingListScreen = props => {
 
                     {editedList && editedList.items.length > 0 && (
                         <Button title="Manage existing items" onPress={() => {
-                            props.navigation.navigate(SCREEN_NAME_EDIT_ITEMS, {listId: editedList.id, existingItems: editedList.items});
+                            props.navigation.navigate(SCREEN_NAME_EDIT_ITEMS, {
+                                existingItems: editedList.items,
+                                goBackScreenName: SCREEN_NAME
+                            });
                         }} />
                     )}
-
-                    {editedList && getItemsView(editedList.items) }                   
 
                                    
                 </View>
@@ -360,7 +275,7 @@ const EditShoppingListScreen = props => {
                     onSwitchChange={onSwitchChange}
                     shouldReset={shouldReset}
                 />
-                { formState.switchValues.isShoppingScheduled 
+                { listState.switchValues.isShoppingScheduled 
                     && <DateTimeOptions
                         onDataChange={onInputChange}
                         onOptionsChange={onSwitchChange}
