@@ -37,7 +37,20 @@ const EditListItemsScreen: React.FC<IProps> = ({route, navigation}) => {
     const {existingItems, goBackScreenName} = route.params;
     const [isChangeOrderMode, setIsChangeOrderMode] = useState(false);
 
-    const [itemsPreview, setItemsPreview] = useState(existingItems);
+    // TODO deep copy needed - don't change initial state!
+    const copyExistingItems = () => {
+        const copiedItems = [];
+        const items = [...existingItems];
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+
+            copiedItems.push(new Item(item.id, item.content, item.isDone, item.order));            
+        }
+
+        return copiedItems;
+    }
+
+    const [itemsPreview, setItemsPreview] = useState(copyExistingItems());
     const [editedItems, setEditedItems] = useState<Item[]>([]);    
     const [deletedItems, setDeletedItems] = useState<string[]>([]);
 
@@ -56,6 +69,48 @@ const EditListItemsScreen: React.FC<IProps> = ({route, navigation}) => {
                                     }} />
         });
     }), [editedItems, deletedItems];    
+
+    /**
+     * 
+     * @param reorderedItems collection of all items (including edited and deleted)
+     */
+    const onOrderSave = (reorderedItems: Item[]) => {
+        setItemsPreview(reorderedItems);
+
+        const items = prepareEditedItemsToSave(reorderedItems);
+        setEditedItems(items);
+
+        setIsChangeOrderMode(false);
+    }
+
+    /**
+     * @description creates collection of all reordered items included previously edited ones.
+     * @param reorderedItems collection of all items (including edited and deleted)
+     */
+    const prepareEditedItemsToSave = (reorderedItems: Item[]): Item[] => {
+        const existingEditedItems = [...editedItems];
+
+        // every is edited but deleted is deleted
+        const itemsWithoutDeleted = reorderedItems.filter( item => !deletedItems.find(itemId => itemId === item.id));
+
+        const itemsToReorder = [];
+        for (let i = 0; i < itemsWithoutDeleted.length; i++) {   
+
+            const item = itemsWithoutDeleted[i]; 
+            item.order = i;
+            
+            const existingItem = existingEditedItems.find(i => i.id === item.id);
+
+            if(existingItem){
+                existingItem.order = item.order;
+                itemsToReorder.push(existingItem);
+            }else {
+                itemsToReorder.push(item);
+            }   
+        }        
+        
+        return itemsToReorder;
+    }
 
     const onExistingItemsChange = (item: Item) =>
     {
@@ -120,8 +175,7 @@ const EditListItemsScreen: React.FC<IProps> = ({route, navigation}) => {
                     <ItemsOrderEditor
                         items={itemsPreview}
                         deletedItems={deletedItems}
-                        onChangeOrder={() => {/* TODO change order */}}
-                        onButtonDonePress={() => setIsChangeOrderMode(false)}
+                        onButtonDonePress={onOrderSave}
                     />
                 </View> 
 

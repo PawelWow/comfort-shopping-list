@@ -109,8 +109,20 @@ const createUpdateItemsQuery = (itemsCount: number) => {
 }
 
 const prepareUpdateItemsQueryValues = (items: Item[]) => {
-    const values = items.map(item => [item.id, item.content, item.id, +item.isDone]);
-    return values.flat();
+
+    const contents = [];
+    const dones = [];
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        contents.push(item.id);
+        contents.push(item.content);
+
+        dones.push(item.id);
+        dones.push(+item.isDone);
+    }
+
+    const values = [...contents.flat(), ...dones.flat()];
+    return values;
 }
 
 //UPDATE items_order SET order_index=CASE WHEN item_id='a1' THEN 6 WHEN item_id='a2' THEN 7 ELSE order_index END WHERE list_id=1;

@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-    View,
     StyleSheet,
     Button,
-    Text,
-    TouchableOpacity    
+    TouchableOpacity,    
+    KeyboardAvoidingView
 } from 'react-native';
 
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
+import Platform from '../../../defs/Platform';
 
 import Item from '../../../models/Item';
 import ListItemView from '../ListItemView';
@@ -15,11 +15,23 @@ import ListItemView from '../ListItemView';
 interface IProps {
     items: Item[];
     deletedItems: string[];
-    onChangeOrder: (items: Item[]) => void;
-    onButtonDonePress: () => void;
+    onButtonDonePress: (items: Item[]) => void;
 }
 
-const ItemsOrderEditor: React.FC<IProps> = ({items, deletedItems, onChangeOrder, onButtonDonePress}) => {
+const ItemsOrderEditor: React.FC<IProps> = ({items, deletedItems, onButtonDonePress}) => {
+    const [reorderedItems, setReorderedItems] = useState<Item[]>(items);
+    const [isTouched, setIsTouched] = useState(false);
+
+    const onOrderChange = (data: Item[]) => {
+        setIsTouched(true);
+        setReorderedItems(data);
+    }
+
+    const onSave = () =>{
+        if (isTouched) {
+            onButtonDonePress(reorderedItems);    
+        }
+    }
 
     const renderItem: React.FC<RenderItemParams<Item>> = ({ item, drag, isActive }) => {
 
@@ -41,15 +53,22 @@ const ItemsOrderEditor: React.FC<IProps> = ({items, deletedItems, onChangeOrder,
             </TouchableOpacity>
         );
       };
-      // TODO out of scroll view /!\
+
     return (
-        <DraggableFlatList
-        data={items}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => item.id}
-        onDragEnd={({ data }) => onChangeOrder(data)}
-        scrollEnabled
-    />
+        <KeyboardAvoidingView 
+            style={{ flex: 1 }}
+            behavior={Platform.isAndroid ? 'height' : 'padding'}
+            keyboardVerticalOffset={30}
+        >
+            <DraggableFlatList
+                data={reorderedItems}
+                renderItem={renderItem}
+                keyExtractor={(item, index) => item.id}
+                onDragEnd={({ data }) => onOrderChange(data)}
+                scrollEnabled
+            />
+            <Button title="Done" onPress={onSave} />
+        </KeyboardAvoidingView>
     );
 };
 

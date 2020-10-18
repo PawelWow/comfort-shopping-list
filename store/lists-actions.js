@@ -119,7 +119,7 @@ export const editList = (
     };
 
     /**
-     * @description returns not updated and to deleted items from overall items collection
+     * @description returns not updated and not deleted items from overall items collection
      */
     const reduceItems = () => {
         const itemsReduced = [];             
@@ -160,12 +160,20 @@ export const editList = (
                 await db.changeItemsData(updatedItems, id);
             }
 
+            if(deletedItems.length > 0)
+            {
+                await db.removeItems(deletedItems);  
+            }
+
             const itemsReduced = reduceItems();
             let itemsResult = [...itemsReduced, ...updatedItems, ...items];
 
-            if(deletedItems.length > 0)
+            const orderChanged = existingItems.find(item => 
+                                    !!updatedItems.find(updated => 
+                                        updated.id === item.id && updated.order !== item.order));
+
+            if(orderChanged || deletedItems.length > 0)
             {
-                await db.removeItems(deletedItems);
 
                 const itemsUpdatedOrder = updateItemsOrder(itemsResult);
                 await db.updateOrderOfItems(id, itemsUpdatedOrder);
@@ -283,7 +291,7 @@ const createItems = (itemsInput, startIndex = 0) => {
     const items = itemsInput.split(separators).filter(element => element.length !== 0);
         
     const itemsCreated = [];
-    for(itemIndex = 0, order = startIndex; itemIndex < items.length; itemIndex++, order++){
+    for(let itemIndex = 0, order = startIndex; itemIndex < items.length; itemIndex++, order++){
         const id = shortid.generate();
         const content = items[itemIndex].trim();
         itemsCreated.push(new Item(id, content, false, order));
