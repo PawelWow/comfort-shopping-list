@@ -9,9 +9,9 @@ import {
 
 import Platform from '../../defs/Platform';
 
-import Item, {sortItems} from '../../models/Item';
-import ItemsEditor from '../../components/Items/Lists/ItemsEditor';
-import ItemsOrderEditor from '../../components/Items/Lists/ItemsOrderEditor';
+import { Item, sortItems } from '../../models/Item';
+import ItemsEditor from '../../components/Items/Lists/ItemsEditor/ItemsEditor';
+import ItemsOrderEditor from '../../components/Items/Lists/ItemsOrderEditor/ItemsOrderEditor';
 import SaveHeaderButton from '../../components/UI/Buttons/SaveHeaderButton';
 
 interface IParams {

@@ -1,4 +1,4 @@
-class ShoppingList {
+export class ShoppingList {
     constructor(id, title, items, creationDate, shoppingTimeOptions){
         this.id = id;
         this.title = title;
@@ -7,5 +7,3 @@ class ShoppingList {
         this.shoppingTimeOptions = shoppingTimeOptions;
     };
 }
-
-export default ShoppingList;

@@ -1,11 +1,11 @@
 import * as db from '../helpers/db/index';
 
  import { saveDataToLocalStorage, loadLocalStorageData, removeDataFromLocalStorage } from '../helpers/localStorage';
- import CurrentListSettings, {STORAGE_KEY_CURRENT_LIST} from '../models/CurrentListSettings';
+ import { CurrentListSettings, STORAGE_KEY_CURRENT_LIST } from '../models';
 
 import shortid from 'shortid';
 
-import Item, { sortItems } from '../models/Item';
+import { Item, sortItems } from '../models';
 import Separators from '../defs/Separators';
 
 export const ADD_LIST = 'ADD_LIST';

@@ -1,7 +1,7 @@
 /**
  * Model of a list item
  */
-class Item {
+export class Item {
     id: string;
     content: string;
     isDone: boolean;
@@ -14,8 +14,6 @@ class Item {
         this.order = order;
     }
 }
-
-export default Item;
 
 /**
  * @description Sort items by specified order

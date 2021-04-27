@@ -1,4 +1,4 @@
-class ShoppingTimeOptions {
+export class ShoppingTimeOptions {
    constructor(isShoppingScheduled, shoppingDate, isReminderSet, remindOnTime, reminderHours, reminderMinutes ){
 
         // Czy zakupy w ogóle są planowane?
@@ -15,4 +15,3 @@ class ShoppingTimeOptions {
    }
 }
 
-export default ShoppingTimeOptions;

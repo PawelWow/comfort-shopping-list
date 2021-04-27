@@ -1,24 +1,19 @@
 import React, { useState } from 'react';
 import {
-    StyleSheet,
     Button,
     TouchableOpacity,    
     KeyboardAvoidingView
 } from 'react-native';
 
 import DraggableFlatList, { RenderItemParams } from "react-native-draggable-flatlist";
-import Platform from '../../../defs/Platform';
+import { Item } from '../../../../models';
+import Platform from '../../../../defs/Platform';
+import ListItemView from '../../ListItemView';
+import { ItemsOrderEditorProps } from './ItemsOrderEditorProps';
+import { styles } from './ItemsOrderEditorStyles';
 
-import Item from '../../../models/Item';
-import ListItemView from '../ListItemView';
 
-interface IProps {
-    items: Item[];
-    deletedItems: string[];
-    onButtonDonePress: (items: Item[]) => void;
-}
-
-const ItemsOrderEditor: React.FC<IProps> = ({items, deletedItems, onButtonDonePress}) => {
+const ItemsOrderEditor: React.FC<ItemsOrderEditorProps> = ({items, deletedItems, onButtonDonePress}) => {
     const [reorderedItems, setReorderedItems] = useState<Item[]>(items);
     const [isTouched, setIsTouched] = useState(false);
 
@@ -71,25 +66,5 @@ const ItemsOrderEditor: React.FC<IProps> = ({items, deletedItems, onButtonDonePr
         </KeyboardAvoidingView>
     );
 };
-
-const styles = StyleSheet.create({
-    screen: {
-        margin: 20
-    },
-    listItem: {
-        borderColor: 'red',
-        backgroundColor: '#fefee3',
-        borderWidth: 1,
-        borderStyle: 'dashed',
-        borderRadius: 1,
-        padding: 5,
-        marginHorizontal: 5,
-        marginVertical: 10,
-    },
-    itemsContainer: {
-        marginTop: 20,
-        flex: 1
-    },
-});
 
 export default ItemsOrderEditor;

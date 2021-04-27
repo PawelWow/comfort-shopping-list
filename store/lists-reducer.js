@@ -8,9 +8,9 @@ import {
     UPDATE_ITEM_DONE
  } from './lists-actions';
 
-import Item, { sortItems } from '../models/Item';
-import ShoppingList from '../models/ShoppingList';
-import ShoppingTimeOptions from '../models/ShoppingTimeOptions';
+import { Item, sortItems } from '../models';
+import { ShoppingList } from '../models/ShoppingList';
+import { ShoppingTimeOptions } from '../models/ShoppingTimeOptions';
 
 const initialState = {
     shoppingLists: [],

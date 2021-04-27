@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import Input from '../UI/Input';
-import Item from '../../models/Item';
+import { Item } from '../../models/Item';
 import IconsNames from '../../defs/IconsNames';
 import Colors from '../../defs/Colors';
 import Platform from '../../defs/Platform';
