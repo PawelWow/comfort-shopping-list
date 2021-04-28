@@ -1,14 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import Input from '../UI/Input';
-import { Item } from '../../models/Item';
-import IconsNames from '../../defs/IconsNames';
-import Colors from '../../defs/Colors';
-import Platform from '../../defs/Platform';
+import Input from '../../UI/Input';
+import { Item } from '../../../models/Item';
+import IconsNames from '../../../defs/IconsNames';
+import Colors from '../../../defs/Colors';
+import Platform from '../../../defs/Platform';
 
-import ListItem from './ListItem';
+import ListItem from '../ListItem';
+
+import { styles } from './EditListItemStyles';
 
 const EditListItem = props => {
     const [isEditMode, setIsEditMode] = useState(false);
@@ -125,22 +127,5 @@ const EditListItem = props => {
         </View>
 )
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection:'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        
-    },
-    listItem: {
-        borderColor: '#ccc',
-        backgroundColor: '#fefee3',
-        borderWidth: 1,
-        padding: 5,
-        margin: 5,
-    },
-});
 
 export default EditListItem;

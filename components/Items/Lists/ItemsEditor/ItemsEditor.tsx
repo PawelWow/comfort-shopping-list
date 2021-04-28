@@ -5,7 +5,7 @@ import {
     Text
 } from 'react-native';
 
-import EditListItem from '../../EditListItem';
+import EditListItem from '../../EditListItem/EditListItem';
 import { ItemsEditorProps } from './ItemsEditorProps';
 
 const ItemsEditor: React.FC<ItemsEditorProps> = ({items, deletedItems, onChange, onItemRemove, onItemRestore, onItemLongPress}) => {
